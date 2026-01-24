@@ -28,4 +28,6 @@ deadline return book
 event project meeting /from Mon 2pm
 event project meeting /to 4pm
 event project meeting /to 4pm /from Mon 2pm
+delete 3
+list
 bye

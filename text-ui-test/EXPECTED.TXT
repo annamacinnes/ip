@@ -109,4 +109,18 @@ Invalid format. Correct usage: event <name> /from <start> /to <end>
 
 Invalid format. Correct usage: event <name> /from <start> /to <end>
 
+Noted. I've removed this task:
+[D][ ] return book (by: Sunday)
+Now you have 8 task(s) left in the list.
+
+Here are the tasks in your list:
+1. [T][ ] borrow book
+2. [T][ ] read book
+3. [D][ ] submit report (by: Friday)
+4. [E][ ] project meeting (from: Mon 2pm to: 4pm)
+5. [E][ ] team outing (from: Fri 6pm to: 9pm)
+6. [T][ ] Study
+7. [D][ ] Finish project (by: Sunday)
+8. [E][ ] Party (from: 7pm to: 10pm)
+
 Bye. Hope to see you again!

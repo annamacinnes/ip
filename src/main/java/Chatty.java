@@ -28,7 +28,9 @@ public class Chatty {
                         System.out.printf("%d. %s%n", i + 1, storage.get(i).toString());
                     }
                     System.out.printf("%n");
-                } else if (command.equals("mark") || command.equals("unmark")) { //if user wants to mark a task
+                } else if (command.equals("mark")
+                        || command.equals("unmark")
+                        || command.equals("delete")) { // If user wants to mark / delete a task
                     int taskNum = 0;
                     // Handle if user does not specify a task number / task number is invalid
                     try {
@@ -62,12 +64,16 @@ public class Chatty {
                         System.out.printf("Nice! I've marked this task as done:%n");
                         System.out.printf("%s%n%n",
                                 storage.get(taskNum).toString());
-                    } else { // unmark
+                    } else if (command.equals("unmark")){ // unmark
                         storage.get(taskNum).markIncomplete();
                         //Completion Message
                         System.out.printf("OK, I've marked this task as not done yet :%n");
                         System.out.printf("%s%n%n",
                                 storage.get(taskNum).toString());
+                    } else {
+                        System.out.printf("Noted. I've removed this task:%n%s%n", storage.get(taskNum).toString());
+                        storage.remove(taskNum);
+                        System.out.printf("Now you have %d task(s) left in the list.%n%n", storage.size());
                     }
                 } else if (command.equals("deadline") || command.equals("event") || command.equals("todo")) { // add task to storage
                     //Handle Errors
