@@ -1,14 +1,14 @@
 public class Task {
-    private final String name;
-    private boolean complete;
+    protected final String name;
+    protected boolean complete;
 
     public Task(String name) {
         this.name = name;
         this.complete = false;
     }
 
-    public String getName() {
-        return this.name;
+    public String toString() {
+        return "[" + this.getStatusIcon() + "]" + this.name;
     }
 
     public String getStatusIcon() {
