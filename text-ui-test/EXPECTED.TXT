@@ -1,40 +1,112 @@
 Hello! I'm Chatty
 What can I do for you?
 
+Please type a command!
+
+Sorry, I don't know what that means!
+
+Sorry, I don't know what that means!
+
 Got it. I've added this task:
 [T][ ] borrow book
 Now you have 1 task(s) in the list.
 
+Got it. I've added this task:
+[T][ ] read book
+Now you have 2 task(s) in the list.
+
 Here are the tasks in your list:
 1. [T][ ] borrow book
+2. [T][ ] read book
 
 Got it. I've added this task:
 [D][ ] return book (by: Sunday)
-Now you have 2 task(s) in the list.
+Now you have 3 task(s) in the list.
+
+Got it. I've added this task:
+[D][ ] submit report (by: Friday)
+Now you have 4 task(s) in the list.
+
+Here are the tasks in your list:
+1. [T][ ] borrow book
+2. [T][ ] read book
+3. [D][ ] return book (by: Sunday)
+4. [D][ ] submit report (by: Friday)
 
 Got it. I've added this task:
 [E][ ] project meeting (from: Mon 2pm to: 4pm)
-Now you have 3 task(s) in the list.
-
-Here are the tasks in your list:
-1. [T][ ] borrow book
-2. [D][ ] return book (by: Sunday)
-3. [E][ ] project meeting (from: Mon 2pm to: 4pm)
+Now you have 5 task(s) in the list.
 
 Got it. I've added this task:
-[T][ ] read book
-Now you have 4 task(s) in the list.
-
-Nice! I've marked this task as done:
-[T][X] read book
+[E][ ] team outing (from: Fri 6pm to: 9pm)
+Now you have 6 task(s) in the list.
 
 Here are the tasks in your list:
 1. [T][ ] borrow book
-2. [D][ ] return book (by: Sunday)
-3. [E][ ] project meeting (from: Mon 2pm to: 4pm)
-4. [T][X] read book
+2. [T][ ] read book
+3. [D][ ] return book (by: Sunday)
+4. [D][ ] submit report (by: Friday)
+5. [E][ ] project meeting (from: Mon 2pm to: 4pm)
+6. [E][ ] team outing (from: Fri 6pm to: 9pm)
+
+Got it. I've added this task:
+[T][ ] Study
+Now you have 7 task(s) in the list.
+
+Here are the tasks in your list:
+1. [T][ ] borrow book
+2. [T][ ] read book
+3. [D][ ] return book (by: Sunday)
+4. [D][ ] submit report (by: Friday)
+5. [E][ ] project meeting (from: Mon 2pm to: 4pm)
+6. [E][ ] team outing (from: Fri 6pm to: 9pm)
+7. [T][ ] Study
+
+Nice! I've marked this task as done:
+[T][X] borrow book
 
 OK, I've marked this task as not done yet :
-[T][ ] read book
+[T][ ] borrow book
+
+Got it. I've added this task:
+[D][ ] Finish project (by: Sunday)
+Now you have 8 task(s) in the list.
+
+Got it. I've added this task:
+[E][ ] Party (from: 7pm to: 10pm)
+Now you have 9 task(s) in the list.
+
+Here are the tasks in your list:
+1. [T][ ] borrow book
+2. [T][ ] read book
+3. [D][ ] return book (by: Sunday)
+4. [D][ ] submit report (by: Friday)
+5. [E][ ] project meeting (from: Mon 2pm to: 4pm)
+6. [E][ ] team outing (from: Fri 6pm to: 9pm)
+7. [T][ ] Study
+8. [D][ ] Finish project (by: Sunday)
+9. [E][ ] Party (from: 7pm to: 10pm)
+
+Please specify the task number after the command.
+
+Please specify the task number after the command.
+
+Please enter a valid integer for the task number.
+
+Invalid task number!
+
+Invalid task number!
+
+Oops! The description after a todo cannot be empty.
+
+Event name, start time, and end time cannot be empty.
+
+Invalid format. Use: deadline <description> /by <date>
+
+Invalid format. Correct usage: event <name> /from <start> /to <end>
+
+Invalid format. Correct usage: event <name> /from <start> /to <end>
+
+Invalid format. Correct usage: event <name> /from <start> /to <end>
 
 Bye. Hope to see you again!

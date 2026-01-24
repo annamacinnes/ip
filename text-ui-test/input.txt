@@ -1,10 +1,31 @@
+
+hello
+remove 1
 todo borrow book
+todo read book
 list
 deadline return book /by Sunday
+deadline submit report /by Friday
+list
 event project meeting /from Mon 2pm /to 4pm
+event team outing /from Fri 6pm /to 9pm
 list
-todo read book
-mark 4
+ToDo Study
+LiSt
+MARK 1
+UnMark 1
+DEADLINE Finish project /by Sunday
+EvEnT Party /from 7pm /to 10pm
 list
-unmark 4
+mark
+unmark
+mark abc
+unmark 100
+mark -1
+todo
+event /from 2pm /to 4pm
+deadline return book
+event project meeting /from Mon 2pm
+event project meeting /to 4pm
+event project meeting /to 4pm /from Mon 2pm
 bye
