@@ -8,7 +8,7 @@ public class Task {
     }
 
     public String toString() {
-        return "[" + this.getStatusIcon() + "]" + this.name;
+        return "[" + this.getStatusIcon() + "] " + this.name;
     }
 
     public String getStatusIcon() {
