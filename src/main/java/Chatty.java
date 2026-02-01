@@ -2,139 +2,170 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Chatty {
-    public static void main(String[] args) throws ChattyExceptions {
+
+    public enum Command {
+        TODO,
+        DEADLINE,
+        EVENT,
+        MARK,
+        UNMARK,
+        DELETE,
+        LIST,
+        BYE,
+        UNKNOWN // fallback for invalid commands
+    }
+
+    public static void main(String[] args) {
         System.out.println("Hello! I'm Chatty");
         System.out.printf("What can I do for you?%n%n");
         Scanner sc = new Scanner(System.in);
         ArrayList<Task> storage = new ArrayList<>();
+        boolean inLoop = true;
 
-        while (true) {
+        while (inLoop) {
             try {
                 String input = sc.nextLine().trim(); // Handles leading / trailing spaces
                 if (input.isBlank()) {
                     ChattyExceptions.emptyCommand();
                     continue;
                 }
-                String[] inputArr = input.split("\\s+");
-                String command = inputArr[0].toLowerCase();
-
-                if (input.equals("bye")) { // If user types bye
-                    System.out.println("Bye. Hope to see you again!");
-                    break;
-                } else if (input.equalsIgnoreCase("list")) { // if user types list
-                    //                Loop through all elements in array and print name
-                    System.out.printf("Here are the tasks in your list:%n");
-                    for (int i = 0; i < storage.size(); i++) {
-                        System.out.printf("%d. %s%n", i + 1, storage.get(i).toString());
-                    }
-                    System.out.printf("%n");
-                } else if (command.equals("mark")
-                        || command.equals("unmark")
-                        || command.equals("delete")) { // If user wants to mark / delete a task
-                    int taskNum = 0;
-                    // Handle if user does not specify a task number / task number is invalid
-                    try {
-                        if (input.isBlank()) {
-                            ChattyExceptions.emptyCommand();
-                            continue;
+                Command command = parseCommand(input);
+                switch(command) {
+                    case BYE:
+                        System.out.println("Bye. Hope to see you again!");
+                        inLoop = false;
+                        break;
+                    case LIST:
+                        System.out.printf("Here are the tasks in your list:%n");
+                        for (int i = 0; i < storage.size(); i++) {
+                            System.out.printf("%d. %s%n", i + 1, storage.get(i).toString());
                         }
+                        System.out.printf("%n");
+                        break;
 
-                        taskNum = Integer.parseInt(inputArr[1]) - 1;
-                        if (taskNum < 0 || taskNum >= storage.size()) {
-                            ChattyExceptions.invalidTaskNumber();
-                            continue;
-                        }
+                    case MARK:
+                    case UNMARK:
+                    case DELETE:
+                        handleIndexCommand(command, input, storage);
+                        break;
 
-                    } catch (NumberFormatException e) {
-                        ChattyExceptions.nonIntegerTaskNumber();
-                        continue;
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        ChattyExceptions.missingTaskNumber();
-                        continue;
-                    } catch (ChattyExceptions e) {
-                        System.out.println(e.getMessage());
-                        continue;
-                    }
-
-                    if (command.equals("mark")) {
-                        // Mark task as complete
-                        storage.get(taskNum).markComplete();
-
-                        // Completion message
-                        System.out.printf("Nice! I've marked this task as done:%n");
-                        System.out.printf("%s%n%n",
-                                storage.get(taskNum).toString());
-                    } else if (command.equals("unmark")){ // unmark
-                        storage.get(taskNum).markIncomplete();
-                        //Completion Message
-                        System.out.printf("OK, I've marked this task as not done yet :%n");
-                        System.out.printf("%s%n%n",
-                                storage.get(taskNum).toString());
-                    } else {
-                        System.out.printf("Noted. I've removed this task:%n%s%n", storage.get(taskNum).toString());
-                        storage.remove(taskNum);
-                        System.out.printf("Now you have %d task(s) left in the list.%n%n", storage.size());
-                    }
-                } else if (command.equals("deadline") || command.equals("event") || command.equals("todo")) { // add task to storage
-                    //Handle Errors
-                    if (inputArr.length < 2) {
-                        ChattyExceptions.emptyDescription(command);
-                        continue;
-                    }
-                    if (command.equals("deadline")) { // parse input
-                        int byIndex = input.indexOf("/by");
-                        // If Format is incorrect
-                        if (byIndex == -1 ) {
-                            ChattyExceptions.invalidDeadlineFormat();
-                            continue;
-                        }
-                        String name = input.substring("deadline".length() + 1, input.indexOf("/"));
-                        String date = input.substring(byIndex + 4);
-                        //                Task to add
-                        Deadline toAdd = new Deadline(name, date);
-                        //                Add to storage
-                        storage.add(toAdd);
-                        System.out.printf("Got it. I've added this task:%n");
-                        System.out.println(toAdd.toString());
-                    } else if (command.equals("event")) {
-                        int fromIndex = input.indexOf("/from");
-                        int toIndex = input.indexOf("/to");
-
-                        // Check if /from and /to exist and in correct order
-                        if (fromIndex == -1 || toIndex == -1 || fromIndex >= toIndex) {
-                            ChattyExceptions.invalidEventFormat();
-                            continue;
-                        }
-                        // Parse input
-                        String name = input.substring("event".length() + 1, input.indexOf("/"));
-                        String from = input.substring(fromIndex + 6, toIndex - 1);
-                        String to = input.substring(toIndex + 4);
-                        // Check for empty fields
-                        if (name.isEmpty() || from.isEmpty() || to.isEmpty()) {
-                            ChattyExceptions.emptyEventFields();
-                            continue;
-                        }
-                        // Task to add
-                        Event toAdd = new Event(name, from, to);
-                        //                Add to storage
-                        storage.add(toAdd);
-                        System.out.printf("Got it. I've added this task:%n");
-                        System.out.println(toAdd.toString());
-                    } else {
-                        Todo toAdd = new Todo(input.substring("todo".length() + 1));
-                        System.out.printf("Got it. I've added this task:%n");
-                        storage.add(toAdd);
-                        System.out.println(toAdd.toString());
-                    }
-                    System.out.printf("Now you have %d task(s) in the list.%n%n", storage.size());
-                } else {
-                    ChattyExceptions.unknownCommand();
+                    case TODO:
+                    case DEADLINE:
+                    case EVENT:
+                        addTask(command, storage, input);
+                        break;
+                    default:
+                        ChattyExceptions.unknownCommand();
                 }
             } catch (ChattyExceptions e) {
                 System.out.println(e.getMessage());
-                continue;
             }
         }
-        sc.close();
+    }
+
+    private static Command parseCommand(String input) throws ChattyExceptions {
+        String firstWord = input.split("\\s+")[0].toLowerCase();
+        try {
+            return Command.valueOf(firstWord.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return Command.UNKNOWN;
+        }
+    }
+
+    private static int parseTaskIndex(String input, ArrayList<Task> storage)
+            throws ChattyExceptions {
+        String[] parts = input.split("\\s+");
+
+        if (parts.length < 2) {
+            ChattyExceptions.missingTaskNumber();
+        }
+
+        try {
+            int index = Integer.parseInt(parts[1]) - 1;
+            if (index < 0 || index >= storage.size()) {
+                ChattyExceptions.invalidTaskNumber();
+            }
+            return index;
+        } catch (NumberFormatException e) {
+            ChattyExceptions.nonIntegerTaskNumber();
+            return -1; // unreachable
+        }
+    }
+
+    private static void handleIndexCommand(Command command, String input, ArrayList<Task> storage)
+            throws ChattyExceptions{
+        int taskNum = parseTaskIndex(input, storage);
+        switch(command) {
+        case MARK:
+            storage.get(taskNum).markComplete();
+
+            System.out.printf("Nice! I've marked this task as done:%n");
+            System.out.printf("%s%n%n", storage.get(taskNum).toString());
+            break;
+
+        case UNMARK:
+            storage.get(taskNum).markIncomplete();
+
+            System.out.printf("OK, I've marked this task as not done yet :%n");
+            System.out.printf("%s%n%n", storage.get(taskNum).toString());
+            break;
+
+        case DELETE:
+            System.out.printf("Noted. I've removed this task:%n%s%n", storage.get(taskNum).toString());
+            storage.remove(taskNum);
+            System.out.printf("Now you have %d task(s) left in the list.%n%n", storage.size());
+            break;
+        }
+    }
+
+    private static void addTask(Command command,ArrayList<Task> storage, String input) throws ChattyExceptions {
+        if (input.split("\\s+").length < 2) {
+            ChattyExceptions.emptyDescription(command.name().toLowerCase());
+        }
+        switch(command) {
+            case DEADLINE:
+                int byIndex = input.indexOf("/by");
+                // If format is incorrect
+                if (byIndex == -1 ) {
+                    ChattyExceptions.invalidDeadlineFormat();
+                }
+                String DeadlineName = input.substring("deadline".length() + 1, input.indexOf("/"));
+                String date = input.substring(byIndex + 4);
+                Deadline toAdd = new Deadline(DeadlineName, date);
+                storage.add(toAdd);
+                System.out.printf("Got it. I've added this task:%n");
+                System.out.println(toAdd);
+                break;
+            case EVENT:
+                int fromIndex = input.indexOf("/from");
+                int toIndex = input.indexOf("/to");
+
+                // Check if /from and /to exist and in correct order
+                if (fromIndex == -1 || toIndex == -1 || fromIndex >= toIndex) {
+                    ChattyExceptions.invalidEventFormat();
+                }
+                // Parse input
+                String name = input.substring("event".length() + 1, input.indexOf("/"));
+                String from = input.substring(fromIndex + 6, toIndex - 1);
+                String to = input.substring(toIndex + 4);
+                // Check for empty fields
+                if (name.isEmpty() || from.isEmpty() || to.isEmpty()) {
+                    ChattyExceptions.emptyEventFields();
+                }
+
+                Event event = new Event(name, from, to);
+                storage.add(event);
+                System.out.printf("Got it. I've added this task:%n");
+                System.out.println(event);
+                break;
+            case TODO:
+                Todo todo = new Todo(input.substring("todo".length() + 1));
+                System.out.printf("Got it. I've added this task:%n");
+                storage.add(todo);
+                System.out.println(todo);
+                break;
+        }
+        System.out.printf("Now you have %d task(s) in the list.%n%n", storage.size());
     }
 }
+
