@@ -1,7 +1,13 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 
 public class Chatty {
+
+    private static final String FILE_PATH = "./data/chatty.txt";
 
     public enum Command {
         TODO,
@@ -15,11 +21,11 @@ public class Chatty {
         UNKNOWN // fallback for invalid commands
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         System.out.println("Hello! I'm Chatty");
         System.out.printf("What can I do for you?%n%n");
         Scanner sc = new Scanner(System.in);
-        ArrayList<Task> storage = new ArrayList<>();
+        ArrayList<Task> storage = load();
         boolean inLoop = true;
 
         while (inLoop) {
@@ -47,20 +53,69 @@ public class Chatty {
                     case UNMARK:
                     case DELETE:
                         handleIndexCommand(command, input, storage);
+                        writeToFile(storage);
                         break;
 
                     case TODO:
                     case DEADLINE:
                     case EVENT:
                         addTask(command, storage, input);
+                        writeToFile(storage);
                         break;
                     default:
                         ChattyExceptions.unknownCommand();
                 }
             } catch (ChattyExceptions e) {
                 System.out.println(e.getMessage());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
+    }
+
+    private static void writeToFile(ArrayList<Task> tasksToAdd) throws IOException {
+        File file = new File(FILE_PATH);
+        file.getParentFile().mkdirs();
+        try (FileWriter fw = new FileWriter(FILE_PATH)){
+            int i = 0;
+            for (Task task: tasksToAdd) {
+                i++;
+                fw.write(String.format("%d. %s%n", i, task.toString()));
+            }
+        } catch (IOException e) {
+            System.out.println("Something went wrong: " + e.getMessage());
+        }
+    }
+
+    private static ArrayList<Task> load() throws FileNotFoundException {
+        File file = new File(FILE_PATH);
+        file.getParentFile().mkdirs();
+        Scanner s = new Scanner(file);
+        ArrayList<Task> tasks = new ArrayList<>();
+        while (s.hasNext()) {
+            String taskDescription = s.nextLine();
+            int startNameIndex = taskDescription.indexOf("] ") + 2;
+            if (taskDescription.contains("[T]")) {
+                tasks.add(new Todo(taskDescription.substring(startNameIndex)));
+            } else {
+                String substring = taskDescription.substring(startNameIndex, taskDescription.indexOf("("));
+                if (taskDescription.contains("[D]")) {
+                    String name = substring;
+                    String date = taskDescription.substring(taskDescription.indexOf("(by: ") + 5, taskDescription.length() - 1);
+                    tasks.add(new Deadline(name, date));
+                } else {
+                    String name = substring;
+                    String from = taskDescription.substring(taskDescription.indexOf("from: ") + 6,
+                                                            taskDescription.indexOf((" to:")));
+                    String to = taskDescription.substring(taskDescription.indexOf("to:") + 4, taskDescription.length() - 2);
+                    tasks.add(new Event(name, from, to));
+                }
+            }
+            if (taskDescription.contains("[X]")) {
+                tasks.get(tasks.size() - 1).markComplete();
+            }
+        }
+        return tasks;
     }
 
     private static Command parseCommand(String input) throws ChattyExceptions {
