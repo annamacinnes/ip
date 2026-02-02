@@ -39,4 +39,8 @@ public class ChattyExceptions extends Exception {
     public static void unknownCommand() throws ChattyExceptions {
         throw new ChattyExceptions(String.format("Sorry, I don't know what that means!%n"));
     }
+
+    public static void invalidDateFormat() throws ChattyExceptions {
+        throw new ChattyExceptions((String.format("Invalid date format. Dates should be formatted as yyyy-mm-ddThh:mm:ss%n")));
+    }
 }

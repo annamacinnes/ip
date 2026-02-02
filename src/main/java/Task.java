@@ -26,4 +26,8 @@ public class Task {
     public void markIncomplete() {
         this.complete = false;
     }
+
+    public String getType() {
+        return "todo";
+    }
 }
