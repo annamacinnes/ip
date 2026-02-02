@@ -41,6 +41,6 @@ public class ChattyExceptions extends Exception {
     }
 
     public static void invalidDateFormat() throws ChattyExceptions {
-        throw new ChattyExceptions((String.format("Invalid date format. Dates should be formatted as yyyy-mm-ddThh:mm:ss%n")));
+        throw new ChattyExceptions((String.format("Invalid date format. Dates should be formatted as yyyy-mm-dd")));
     }
 }
