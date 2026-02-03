@@ -1,3 +1,5 @@
+package chatty.task;
+
 public class Task {
     protected final String name;
     protected boolean complete;

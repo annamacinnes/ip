@@ -1,4 +1,4 @@
-Hello! I'm Chatty
+Hello! I'm chatty.Chatty
 What can I do for you?
 
 Please type a command!
@@ -99,7 +99,7 @@ Invalid task number!
 
 Oops! The description after a todo cannot be empty.
 
-Event name, start time, and end time cannot be empty.
+chatty.task.Event name, start time, and end time cannot be empty.
 
 Invalid format. Use: deadline <description> /by <date>
 

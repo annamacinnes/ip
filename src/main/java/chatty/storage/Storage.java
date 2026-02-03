@@ -1,3 +1,9 @@
+package chatty.storage;
+import chatty.ChattyExceptions;
+import chatty.parser.Parser;
+import chatty.task.TaskList;
+import chatty.ui.Ui;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;

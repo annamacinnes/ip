@@ -1,3 +1,5 @@
+package chatty;
+
 public class ChattyExceptions extends Exception {
     // Constructor to pass custom messages
     public ChattyExceptions(String message) {
@@ -33,7 +35,7 @@ public class ChattyExceptions extends Exception {
     }
 
     public static void emptyEventFields() throws ChattyExceptions {
-        throw new ChattyExceptions(String.format("Event name, start time, and end time cannot be empty.%n"));
+        throw new ChattyExceptions(String.format("chatty.task.Event name, start time, and end time cannot be empty.%n"));
     }
 
     public static void unknownCommand() throws ChattyExceptions {

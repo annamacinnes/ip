@@ -1,10 +1,14 @@
+package chatty.ui;
+
+import chatty.task.Task;
+import chatty.task.TaskList;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 
 public class Ui {
     public static void printWelcomeMessage() {
-        System.out.println("Hello! I'm Chatty");
+        System.out.println("Hello! I'm chatty.Chatty");
         System.out.printf("What can I do for you?%n%n");
     }
 

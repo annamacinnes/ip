@@ -1,3 +1,9 @@
+package chatty.parser;
+
+import chatty.Chatty;
+import chatty.ChattyExceptions;
+import chatty.task.*;
+
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

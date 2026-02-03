@@ -6,21 +6,18 @@ if [ ! -d "../bin" ]; then
 fi
 
 # Remove output from previous run
-if [ -e "./ACTUAL.TXT" ]; then
-    rm ACTUAL.TXT
-fi
+rm -f ACTUAL.TXT
 
-# Compile the code (stop if compilation fails)
-if ! javac -cp ../src/main/java -Xlint:none -d ../bin ../src/main/java/*.java; then
-    echo "********** BUILD FAILURE **********"
+# Compile all Java files recursively
+if ! javac -Xlint:none -d ../bin $(find ../src/main/java -name "*.java"); then
     echo "********** BUILD FAILURE **********"
     exit 1
 fi
 
-# Run the program using input.txt and save output
-java -classpath ../bin Chatty < input.txt > ACTUAL.TXT
+# Run using fully qualified class name
+java -cp ../bin chatty.Chatty < input.txt > ACTUAL.TXT
 
-# Compare actual output with expected output
+# Compare output
 diff ACTUAL.TXT EXPECTED.TXT
 if [ $? -eq 0 ]; then
     echo "Test result: PASSED"

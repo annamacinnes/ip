@@ -1,3 +1,10 @@
+package chatty.task;
+
+import chatty.Chatty;
+import chatty.ChattyExceptions;
+import chatty.parser.Parser;
+import chatty.ui.Ui;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.DateTimeException;
@@ -86,7 +93,7 @@ public class TaskList {
     }
 
     public void markTask(Chatty.Command command, String input)
-            throws ChattyExceptions{
+            throws ChattyExceptions {
         int taskNum = Parser.parseTaskIndex(input, this);
         switch(command) {
             case MARK:
