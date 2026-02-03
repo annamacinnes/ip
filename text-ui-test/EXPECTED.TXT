@@ -131,6 +131,7 @@ Here are the tasks relevant to Mar 04 2026
 5. [E][ ] Party (from: Mar 04 2026 to: Mar 04 2026)
 
 Invalid date format. Dates should be formatted as yyyy-mm-dd
+
 Oops! The description after a due cannot be empty.
 
 Bye. Hope to see you again!
