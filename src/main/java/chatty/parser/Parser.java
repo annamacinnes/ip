@@ -15,7 +15,7 @@ public class Parser {
         try {
             return Chatty.Command.valueOf(firstWord.toUpperCase());
         } catch (IllegalArgumentException e) {
-            return Chatty.Command.UNKNOWN;
+            return Chatty.Command.COMMAND_UNKNOWN;
         }
     }
 
@@ -44,46 +44,46 @@ public class Parser {
             ChattyExceptions.emptyDescription(command.name().toLowerCase());
         }
         switch (command) {
-            case DEADLINE:
-                int byIndex = input.indexOf("/by");
-                // If format is incorrect
-                if (byIndex == -1) {
-                    ChattyExceptions.invalidDeadlineFormat();
-                }
-                String DeadlineName = input.substring("deadline".length() + 1, input.indexOf("/"));
-                String date = input.substring(byIndex + 4);
-                try {
-                    LocalDate parsedBy = LocalDate.parse(date);
-                    return new Deadline(DeadlineName, parsedBy);
-                } catch (DateTimeException e) {
-                    ChattyExceptions.invalidDateFormat();
-                }
-                break;
-            case EVENT:
-                int fromIndex = input.indexOf("/from");
-                int toIndex = input.indexOf("/to");
+        case COMMAND_DEADLINE:
+            int byIndex = input.indexOf("/by");
+            // If format is incorrect
+            if (byIndex == -1) {
+                ChattyExceptions.invalidDeadlineFormat();
+            }
+            String DeadlineName = input.substring("deadline".length() + 1, input.indexOf("/"));
+            String date = input.substring(byIndex + 4);
+            try {
+                LocalDate parsedBy = LocalDate.parse(date);
+                return new Deadline(DeadlineName, parsedBy);
+            } catch (DateTimeException e) {
+                ChattyExceptions.invalidDateFormat();
+            }
+            break;
+        case COMMAND_EVENT:
+            int fromIndex = input.indexOf("/from");
+            int toIndex = input.indexOf("/to");
 
-                // Check if /from and /to exist and in correct order
-                if (fromIndex == -1 || toIndex == -1 || fromIndex >= toIndex) {
-                    ChattyExceptions.invalidEventFormat();
-                }
-                // Parse input
-                String name = input.substring("event".length() + 1, input.indexOf("/"));
-                String from = input.substring(fromIndex + 6, toIndex - 1);
-                String to = input.substring(toIndex + 4);
-                if (name.isEmpty() || from.isEmpty() || to.isEmpty()) {
-                    ChattyExceptions.emptyEventFields();
-                }
-                try {
-                    LocalDate parsedFrom = LocalDate.parse(from);
-                    LocalDate parsedTo = LocalDate.parse(to);
-                    return new Event(name, parsedFrom, parsedTo);
-                } catch (DateTimeException e) {
-                    ChattyExceptions.invalidDateFormat();
-                }
-                break;
-            case TODO:
-                return new Todo(input.substring("todo".length() + 1));
+            // Check if /from and /to exist and in correct order
+            if (fromIndex == -1 || toIndex == -1 || fromIndex >= toIndex) {
+                ChattyExceptions.invalidEventFormat();
+            }
+            // Parse input
+            String name = input.substring("event".length() + 1, input.indexOf("/"));
+            String from = input.substring(fromIndex + 6, toIndex - 1);
+            String to = input.substring(toIndex + 4);
+            if (name.isEmpty() || from.isEmpty() || to.isEmpty()) {
+                ChattyExceptions.emptyEventFields();
+            }
+            try {
+                LocalDate parsedFrom = LocalDate.parse(from);
+                LocalDate parsedTo = LocalDate.parse(to);
+                return new Event(name, parsedFrom, parsedTo);
+            } catch (DateTimeException e) {
+                ChattyExceptions.invalidDateFormat();
+            }
+            break;
+        case COMMAND_TODO:
+            return new Todo(input.substring("todo".length() + 1));
         }
         return new Task(" ");
     }

@@ -2,11 +2,11 @@ package chatty.task;
 
 public class Task {
     protected final String name;
-    protected boolean complete;
+    protected boolean isComplete;
 
     public Task(String name) {
         this.name = name;
-        this.complete = false;
+        this.isComplete = false;
     }
 
     public String toString() {
@@ -14,19 +14,15 @@ public class Task {
     }
 
     public String getStatusIcon() {
-        return (complete ? "X" : " ");
+        return (isComplete ? "X" : " ");
     }
 
-    public boolean isComplete() {
-        return this.complete;
+    public void setComplete() {
+        this.isComplete = true;
     }
 
-    public void markComplete() {
-        this.complete = true;
-    }
-
-    public void markIncomplete() {
-        this.complete = false;
+    public void setIncomplete() {
+        this.isComplete = false;
     }
 
     public String getType() {

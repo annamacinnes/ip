@@ -31,7 +31,8 @@ public class ChattyExceptions extends Exception {
     }
 
     public static void invalidEventFormat() throws ChattyExceptions {
-        throw new ChattyExceptions(String.format("Invalid format. Correct usage: event <name> /from <start> /to <end>%n"));
+        throw new ChattyExceptions(
+                String.format("Invalid format. Correct usage: event <name> /from <start> /to <end>%n"));
     }
 
     public static void emptyEventFields() throws ChattyExceptions {
