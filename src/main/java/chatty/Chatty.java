@@ -10,8 +10,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 
-
-
 public class Chatty {
     public enum Command {
         TODO,
@@ -25,7 +23,6 @@ public class Chatty {
         DUE,
         UNKNOWN // fallback for invalid commands
     }
-
 
     public static void main(String[] args) throws FileNotFoundException, ChattyExceptions {
         Ui.printWelcomeMessage();
