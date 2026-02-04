@@ -25,16 +25,17 @@ public class Chatty {
      * <p>{@code COMMAND_UNKNOWN} is used as a fallback for invalid commands.</p>
      */
     public enum Command {
-        COMMAND_TODO,
-        COMMAND_DEADLINE,
-        COMMAND_EVENT,
-        COMMAND_MARK,
-        COMMAND_UNMARK,
-        COMMAND_DELETE,
-        COMMAND_LIST,
-        COMMAND_BYE,
-        COMMAND_DUE,
-        COMMAND_UNKNOWN // fallback for invalid commands
+        TODO,
+        DEADLINE,
+        EVENT,
+        MARK,
+        UNMARK,
+        DELETE,
+        LIST,
+        BYE,
+        DUE,
+        FIND,
+        UNKNOWN // fallback for invalid commands
     }
 
     /**
@@ -68,32 +69,41 @@ public class Chatty {
                 Command command = Parser.parseCommand(input);
 
                 switch (command) {
-                case COMMAND_BYE:
+                case BYE:
                     Ui.printByeMessage();
                     inLoop = false;
                     break;
 
-                case COMMAND_LIST:
+                case LIST:
                     Ui.listTaskMessage();
                     taskList.list();
                     break;
 
-                case COMMAND_DUE:
+                case DUE:
                     taskList.getTasksDueOn(input);
                     break;
 
-                case COMMAND_MARK, COMMAND_UNMARK, COMMAND_DELETE:
+                case MARK, UNMARK, DELETE:
                     taskList.markTask(command, input);
                     Storage.writeToFile(taskList);
                     break;
 
-                case COMMAND_TODO, COMMAND_DEADLINE, COMMAND_EVENT:
+                case TODO, DEADLINE, EVENT:
                     Task toAdd = Parser.parseAddTaskCommand(command, input);
                     taskList.add(toAdd);
                     Ui.addTaskMessage(toAdd, taskList);
                     Storage.writeToFile(taskList);
                     break;
-
+                case FIND:
+                    String keyword = Parser.parseKeywordToFind(input);
+                    TaskList tL = taskList.find(keyword);
+                    if (tL.isEmpty()) {
+                        Ui.noMatchingTasksMessage();
+                    } else {
+                        Ui.matchingTasksMessage();
+                        tL.list();
+                    }
+                    break;
                 default:
                     ChattyExceptions.unknownCommand();
                 }

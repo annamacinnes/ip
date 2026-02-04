@@ -47,6 +47,16 @@ public class TaskList {
         System.out.printf("%n");
     }
 
+    public TaskList find(String keyword) {
+        TaskList taskList = new TaskList();
+        for (Task task: tasks) {
+            if (task.getName().contains(keyword)) {
+                taskList.add(task);
+            }
+        }
+        return taskList;
+    }
+
     public void writeToFile(FileWriter fw) {
         int i = 1;
         for (Task task : tasks) {
@@ -96,22 +106,21 @@ public class TaskList {
             throws ChattyExceptions {
         int taskNum = Parser.parseTaskIndex(input, this);
         switch (command) {
-        case COMMAND_MARK:
+        case MARK:
             this.get(taskNum).setComplete();
             Ui.markTaskMessage(taskNum, this);
             break;
 
-        case COMMAND_UNMARK:
+        case UNMARK:
             tasks.get(taskNum).setIncomplete();
             Ui.unmarkTaskMessage(taskNum, this);
             break;
 
-        case COMMAND_DELETE:
+        case DELETE:
             Ui.deleteTaskMessage(taskNum, this);
             this.remove(taskNum);
             break;
         }
     }
-
 
 }

@@ -134,4 +134,14 @@ Invalid date format. Dates should be formatted as yyyy-mm-dd
 
 Oops! The description after a due cannot be empty.
 
+Oops! The description after a find command cannot be empty.
+
+There are no tasks in your list that match this description.
+
+There are no tasks in your list that match this description.
+
+Here are the matching tasks in your list:
+1. [T][ ] borrow book
+2. [T][ ] read book
+
 Bye. Hope to see you again!
