@@ -32,7 +32,7 @@ public class Storage {
             String taskDescription = s.nextLine();
             tasks.add(Parser.parseFileTaskName(taskDescription));
             if (taskDescription.contains("[X]")) {
-                tasks.get(tasks.size() - 1).markComplete();
+                tasks.get(tasks.size() - 1).setComplete();
             }
         }
         return tasks;

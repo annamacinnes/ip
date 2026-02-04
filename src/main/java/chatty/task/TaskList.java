@@ -12,36 +12,36 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class TaskList {
-    private final ArrayList<Task> storage;
+    private final ArrayList<Task> tasks;
 
     public TaskList() {
-        this.storage = new ArrayList<>();
+        this.tasks = new ArrayList<>();
     }
 
     public void add(Task task) {
-        storage.add(task);
+        tasks.add(task);
     }
 
     public int size() {
-        return storage.size();
+        return tasks.size();
     }
 
     public Task get(int i) {
-        return storage.get(i);
+        return tasks.get(i);
     }
 
     public void remove(int i) {
-        storage.remove(i);
+        tasks.remove(i);
     }
 
     public Boolean isEmpty() {
-        return storage.isEmpty();
+        return tasks.isEmpty();
     }
 
     public void list() {
         int i = 1;
-        for (Task task: storage) {
-            System.out.printf("%d. %s%n", i ,task.toString());
+        for (Task task : tasks) {
+            System.out.printf("%d. %s%n", i, task.toString());
             i++;
         }
         System.out.printf("%n");
@@ -49,7 +49,7 @@ public class TaskList {
 
     public void writeToFile(FileWriter fw) {
         int i = 1;
-        for (Task task: storage) {
+        for (Task task : tasks) {
             try {
                 fw.write(String.format("%d. %s%n", i, task.toString()));
                 i++;
@@ -66,7 +66,7 @@ public class TaskList {
         TaskList toPrint = new TaskList();
         try {
             LocalDate dateToFind = LocalDate.parse(input.split("\\s+")[1]);
-            for (Task task: storage) {
+            for (Task task : tasks) {
                 if (task.getType().equalsIgnoreCase("event")) {
                     Event event = (Event) task;
                     if (event.getStartDate().isEqual(dateToFind)
@@ -95,25 +95,23 @@ public class TaskList {
     public void markTask(Chatty.Command command, String input)
             throws ChattyExceptions {
         int taskNum = Parser.parseTaskIndex(input, this);
-        switch(command) {
-            case MARK:
-                this.get(taskNum).markComplete();
-                Ui.markTaskMessage(taskNum, this);
-                break;
+        switch (command) {
+        case COMMAND_MARK:
+            this.get(taskNum).setComplete();
+            Ui.markTaskMessage(taskNum, this);
+            break;
 
-            case UNMARK:
-                storage.get(taskNum).markIncomplete();
-                Ui.unmarkTaskMessage(taskNum, this);
-                break;
+        case COMMAND_UNMARK:
+            tasks.get(taskNum).setIncomplete();
+            Ui.unmarkTaskMessage(taskNum, this);
+            break;
 
-            case DELETE:
-                Ui.deleteTaskMessage(taskNum, this);
-                this.remove(taskNum);
-                break;
+        case COMMAND_DELETE:
+            Ui.deleteTaskMessage(taskNum, this);
+            this.remove(taskNum);
+            break;
         }
     }
-
-
 
 
 }
