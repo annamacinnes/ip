@@ -28,7 +28,7 @@ public class Parser {
      * Parses a user input string and converts it into a {@link Chatty.Command}.
      *
      * @param input the raw input string from the user
-     * @return the corresponding {@link Chatty.Command}, or {@link Chatty.Command#COMMAND_UNKNOWN}
+     * @return the corresponding {@link Chatty.Command}, or {@link Chatty.Command#UNKNOWN}
      *         if the input does not match any known command
      * @throws ChattyExceptions if any custom parsing errors occur
      */
@@ -37,7 +37,7 @@ public class Parser {
         try {
             return Chatty.Command.valueOf(firstWord.toUpperCase());
         } catch (IllegalArgumentException e) {
-            return Chatty.Command.COMMAND_UNKNOWN;
+            return Chatty.Command.UNKNOWN;
         }
     }
 
@@ -70,6 +70,23 @@ public class Parser {
     }
 
     /**
+     * Parses the keyword from a command input string.
+     *
+     * @param input the raw input string containing the task index
+     * @return the keyword to find in the list of tasks
+     * @throws ChattyExceptions if the input is missing the keyword
+     */
+    public static String parseKeywordToFind(String input) throws ChattyExceptions {
+        String keyword = input.substring(4).trim();
+
+        if (keyword.isEmpty()) {
+            ChattyExceptions.emptyDescription("find command");
+        }
+
+        return keyword;
+    }
+
+    /**
      * Parses a user input string to create a new {@link Task} object for add-task commands.
      *
      * @param command the {@link Chatty.Command} type (TODO, DEADLINE, EVENT)
@@ -82,7 +99,7 @@ public class Parser {
             ChattyExceptions.emptyDescription(command.name().toLowerCase());
         }
         switch (command) {
-        case COMMAND_DEADLINE:
+        case DEADLINE:
             int byIndex = input.indexOf("/by");
             if (byIndex == -1) {
                 ChattyExceptions.invalidDeadlineFormat();
@@ -96,7 +113,7 @@ public class Parser {
                 ChattyExceptions.invalidDateFormat();
             }
             break;
-        case COMMAND_EVENT:
+        case EVENT:
             int fromIndex = input.indexOf("/from");
             int toIndex = input.indexOf("/to");
             if (fromIndex == -1 || toIndex == -1 || fromIndex >= toIndex) {
@@ -116,7 +133,7 @@ public class Parser {
                 ChattyExceptions.invalidDateFormat();
             }
             break;
-        case COMMAND_TODO:
+        case TODO:
             return new Todo(input.substring("todo".length() + 1));
         }
         return new Task(" ");

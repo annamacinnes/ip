@@ -53,6 +53,14 @@ public class Ui {
                 dateToFind.format(DateTimeFormatter.ofPattern("MMM dd yyyy")));
     }
 
+    public static void matchingTasksMessage() {
+        System.out.printf("Here are the matching tasks in your list:%n");
+    }
+
+    public static void noMatchingTasksMessage() {
+        System.out.printf("There are no tasks in your list that match this description.%n%n");
+    }
+
     public static void addTaskMessage(Task task, TaskList taskList) {
         System.out.printf("Got it. I've added this task:%n");
         System.out.printf("%s%n",task.toString());

@@ -53,4 +53,8 @@ public class Task {
     public String getType() {
         return "todo";
     }
+
+    public String getName() {
+        return this.name;
+    }
 }

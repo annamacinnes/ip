@@ -13,17 +13,17 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ParserTest {
     @Test
     public void parseCommand_validTodo_returnsTODO() throws ChattyExceptions {
-        assertEquals(Chatty.Command.COMMAND_TODO, Parser.parseCommand("todo read book"));
+        assertEquals(Chatty.Command.TODO, Parser.parseCommand("todo read book"));
     }
 
     @Test
     public void parseCommand_mixedCase_returnsCorrectCommand() throws ChattyExceptions {
-        assertEquals(Chatty.Command.COMMAND_DEADLINE, Parser.parseCommand("DeAdLiNe hw"));
+        assertEquals(Chatty.Command.DEADLINE, Parser.parseCommand("DeAdLiNe hw"));
     }
 
     @Test
     public void parseCommand_unknownCommand_returnsUNKNOWN() throws ChattyExceptions {
-        assertEquals(Chatty.Command.COMMAND_UNKNOWN, Parser.parseCommand("random text"));
+        assertEquals(Chatty.Command.UNKNOWN, Parser.parseCommand("random text"));
     }
 
     @Test
@@ -57,7 +57,7 @@ public class ParserTest {
     @Test
     public void parseAddTaskCommand_todo_createsTodo() throws ChattyExceptions {
         Task task = Parser.parseAddTaskCommand(
-                Chatty.Command.COMMAND_TODO,
+                Chatty.Command.TODO,
                 "todo read book"
         );
 
@@ -68,7 +68,7 @@ public class ParserTest {
     @Test
     public void parseAddTaskCommand_deadline_valid_createsDeadline() throws ChattyExceptions {
         Task task = Parser.parseAddTaskCommand(
-                Chatty.Command.COMMAND_DEADLINE,
+                Chatty.Command.DEADLINE,
                 "deadline submit report /by 2026-03-01"
         );
 
@@ -81,7 +81,7 @@ public class ParserTest {
     public void parseAddTaskCommand_deadline_missingBy_throwsException() {
         assertThrows(ChattyExceptions.class, () ->
                 Parser.parseAddTaskCommand(
-                        Chatty.Command.COMMAND_DEADLINE,
+                        Chatty.Command.DEADLINE,
                         "deadline submit report"
                 ));
     }
@@ -89,7 +89,7 @@ public class ParserTest {
     @Test
     public void parseAddTaskCommand_event_valid_createsEvent() throws ChattyExceptions {
         Task task = Parser.parseAddTaskCommand(
-                Chatty.Command.COMMAND_EVENT,
+                Chatty.Command.EVENT,
                 "event conference /from 2026-03-01 /to 2026-03-03"
         );
 
