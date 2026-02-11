@@ -7,64 +7,58 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class Ui {
-    public static void printWelcomeMessage() {
-        System.out.println("Hello! I'm chatty.Chatty");
-        System.out.printf("What can I do for you?%n%n");
+    public static String printWelcomeMessage() {
+        return "Hello! I'm chatty.Chatty" + String.format("What can I do for you?%n%n");
     }
 
-    public static void printByeMessage() {
-        System.out.println("Bye. Hope to see you again!");
+    public static String printByeMessage() {
+        return "Bye. Hope to see you again!";
     }
 
-    public static void addedTaskMessage(TaskList storage) {
-        System.out.printf("Got it. I've added this task:%n");
-        System.out.println(storage.get(storage.size() - 1));
+    public static String markTaskMessage(int taskNum, TaskList storage) {
+        return String.format("Nice! I've marked this task as done:%n")
+                + String.format("%s%n%n", storage.get(taskNum).toString());
     }
 
-    public static void markTaskMessage(int taskNum, TaskList storage) {
-        System.out.printf("Nice! I've marked this task as done:%n");
-        System.out.printf("%s%n%n", storage.get(taskNum).toString());
+    public static String unmarkTaskMessage(int taskNum, TaskList storage) {
+        return String.format("OK, I've marked this task as not done yet :%n")
+                + String.format("%s%n%n", storage.get(taskNum).toString());
     }
 
-    public static void unmarkTaskMessage(int taskNum, TaskList storage) {
-        System.out.printf("OK, I've marked this task as not done yet :%n");
-        System.out.printf("%s%n%n", storage.get(taskNum).toString());
+    public static String deleteTaskMessage(Task task, TaskList storage) {
+        return String.format("Noted. I've removed this task:%n%s%n", task.toString())
+                + String.format("Now you have %d task(s) left in the list.%n%n", storage.size());
     }
 
-    public static void deleteTaskMessage(int taskNum, TaskList storage) {
-        System.out.printf("Noted. I've removed this task:%n%s%n", storage.get(taskNum).toString());
-        System.out.printf("Now you have %d task(s) left in the list.%n%n", storage.size() - 1);
+    public static String loadErrorMessage(String e) {
+        return String.format("Something went wrong: %s%n", e);
     }
 
-    public static void loadErrorMessage(String e) {
-        System.out.printf("Something went wrong: %s%n", e);
+    public static String listTaskMessage() {
+        return String.format("Here are the tasks in your list:%n");
     }
 
-    public static void listTaskMessage() {
-        System.out.printf("Here are the tasks in your list:%n");
+    public static String noRelevantTaskMessage() {
+        return String.format("There are no tasks relevant to this date!%n%n");
     }
 
-    public static void noRelevantTaskMessage() {
-        System.out.printf("There are no tasks relevant to this date!%n%n");
-    }
-
-    public static void relevantTasksMessage(LocalDate dateToFind) {
-        System.out.printf("Here are the tasks relevant to %s%n",
+    public static String relevantTasksMessage(LocalDate dateToFind) {
+        return String.format("Here are the tasks relevant to %s%n",
                 dateToFind.format(DateTimeFormatter.ofPattern("MMM dd yyyy")));
     }
 
-    public static void matchingTasksMessage() {
-        System.out.printf("Here are the matching tasks in your list:%n");
+    public static String matchingTasksMessage() {
+        return String.format("Here are the matching tasks in your list:%n");
     }
 
-    public static void noMatchingTasksMessage() {
-        System.out.printf("There are no tasks in your list that match this description.%n%n");
+    public static String noMatchingTasksMessage() {
+        return String.format("There are no tasks in your list that match this description.%n%n");
     }
 
-    public static void addTaskMessage(Task task, TaskList taskList) {
-        System.out.printf("Got it. I've added this task:%n");
-        System.out.printf("%s%n",task.toString());
-        System.out.printf("Now you have %d task(s) in the list.%n%n", taskList.size());
+    public static String addTaskMessage(Task task, TaskList taskList) {
+        return String.format("Got it. I've added this task:%n")
+                + String.format("%s%n",task.toString())
+                + String.format("Now you have %d task(s) in the list.%n%n", taskList.size());
     }
 
 }

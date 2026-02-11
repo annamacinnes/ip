@@ -38,13 +38,15 @@ public class TaskList {
         return tasks.isEmpty();
     }
 
-    public void list() {
+    public String list() {
         int i = 1;
+        String list = "";
         for (Task task : tasks) {
-            System.out.printf("%d. %s%n", i, task.toString());
+            list += String.format("%d. %s%n", i, task.toString());
             i++;
         }
-        System.out.printf("%n");
+        list += String.format("%n");
+        return list;
     }
 
     public TaskList find(String keyword) {
@@ -69,7 +71,7 @@ public class TaskList {
         }
     }
 
-    public void getTasksDueOn(String input) throws ChattyExceptions {
+    public String getTasksDueOn(String input) throws ChattyExceptions {
         if (input.split("\\s+").length < 2) {
             ChattyExceptions.emptyDescription("due");
         }
@@ -92,35 +94,34 @@ public class TaskList {
                 }
             }
             if (toPrint.isEmpty()) {
-                Ui.noRelevantTaskMessage();
+                return Ui.noRelevantTaskMessage();
             } else {
-                Ui.relevantTasksMessage(dateToFind);
-                toPrint.list();
+                return Ui.relevantTasksMessage(dateToFind) + toPrint.list();
             }
         } catch (DateTimeException e) {
             ChattyExceptions.invalidDateFormat();
         }
+        return null;
     }
 
-    public void markTask(Chatty.Command command, String input)
+    public String markTask(Chatty.Command command, String input)
             throws ChattyExceptions {
         int taskNum = Parser.parseTaskIndex(input, this);
         switch (command) {
         case MARK:
             this.get(taskNum).setComplete();
-            Ui.markTaskMessage(taskNum, this);
-            break;
+            return Ui.markTaskMessage(taskNum, this);
 
         case UNMARK:
             tasks.get(taskNum).setIncomplete();
-            Ui.unmarkTaskMessage(taskNum, this);
-            break;
+            return Ui.unmarkTaskMessage(taskNum, this);
 
         case DELETE:
-            Ui.deleteTaskMessage(taskNum, this);
+            Task task = this.get(taskNum);
             this.remove(taskNum);
-            break;
+            return Ui.deleteTaskMessage(task, this);
         }
+        return null;
     }
 
 }

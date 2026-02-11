@@ -2,8 +2,11 @@ package chatty.parser;
 
 import chatty.Chatty;
 import chatty.ChattyExceptions;
+import chatty.storage.Storage;
 import chatty.task.*;
+import chatty.ui.Ui;
 
+import java.io.IOException;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -30,9 +33,8 @@ public class Parser {
      * @param input the raw input string from the user
      * @return the corresponding {@link Chatty.Command}, or {@link Chatty.Command#UNKNOWN}
      *         if the input does not match any known command
-     * @throws ChattyExceptions if any custom parsing errors occur
      */
-    public static Chatty.Command parseCommand(String input) throws ChattyExceptions {
+    public static Chatty.Command parseCommand(String input) {
         String firstWord = input.split("\\s+")[0].toLowerCase();
         try {
             return Chatty.Command.valueOf(firstWord.toUpperCase());
@@ -154,16 +156,15 @@ public class Parser {
             try {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd yyyy");
 
+                String substring = taskDescription.substring(startNameIndex, taskDescription.indexOf("(")).trim();
                 if (taskDescription.contains("[D]")) {
-                    String name = taskDescription.substring(startNameIndex, taskDescription.indexOf("(")).trim();
                     String date = taskDescription.substring(
                             taskDescription.indexOf("(by: ") + 5,
                             taskDescription.length() - 1
                     ).trim();
-                    return new Deadline(name, LocalDate.parse(date, formatter));
+                    return new Deadline(substring, LocalDate.parse(date, formatter));
 
                 } else if (taskDescription.contains("[E]")) {
-                    String name = taskDescription.substring(startNameIndex, taskDescription.indexOf("(")).trim();
                     String from = taskDescription.substring(
                             taskDescription.indexOf("from: ") + 6,
                             taskDescription.indexOf(" to:")
@@ -173,7 +174,7 @@ public class Parser {
                             taskDescription.length() - 1
                     ).trim();
                     return new Event(
-                            name,
+                            substring,
                             LocalDate.parse(from, formatter),
                             LocalDate.parse(to, formatter)
                     );
@@ -183,5 +184,48 @@ public class Parser {
             }
         }
         return new Task(" ");
+    }
+
+    public static String handleCommandType(Chatty.Command command,
+                                         TaskList taskList, String input) throws ChattyExceptions, IOException {
+        String output = "";
+        switch (command) {
+        case BYE:
+            output = Ui.printByeMessage();
+            break;
+
+        case LIST:
+            output = Ui.listTaskMessage() + taskList.list();
+            break;
+
+        case DUE:
+            output = taskList.getTasksDueOn(input);
+            break;
+
+        case MARK, UNMARK, DELETE:
+            output = taskList.markTask(command, input);
+            Storage.writeToFile(taskList);
+            break;
+
+        case TODO, DEADLINE, EVENT:
+            Task toAdd = Parser.parseAddTaskCommand(command, input);
+            taskList.add(toAdd);
+            output = Ui.addTaskMessage(toAdd, taskList);
+            Storage.writeToFile(taskList);
+            break;
+        case FIND:
+            String keyword = Parser.parseKeywordToFind(input);
+            TaskList tL = taskList.find(keyword);
+            if (tL.isEmpty()) {
+                output = Ui.noMatchingTasksMessage();
+            } else {
+                output = Ui.matchingTasksMessage();
+                output += tL.list();
+            }
+            break;
+        default:
+            ChattyExceptions.unknownCommand();
+        }
+        return output;
     }
 }

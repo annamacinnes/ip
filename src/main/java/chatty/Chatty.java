@@ -18,7 +18,6 @@ import java.util.Scanner;
  * loop until the user exits the application.</p>
  */
 public class Chatty {
-
     /**
      * Represents all supported commands in the Chatty application.
      *
@@ -38,78 +37,25 @@ public class Chatty {
         UNKNOWN // fallback for invalid commands
     }
 
-    /**
-     * Starts the Chatty application.
-     *
-     * <p>This method loads existing tasks from storage, displays the welcome
-     * message, and continuously processes user input until the exit command
-     * is issued.</p>
-     *
-     * @param args command-line arguments (not used)
-     * @throws FileNotFoundException if the storage file cannot be found
-     * @throws ChattyExceptions if an unrecoverable application error occurs
-     */
-    public static void main(String[] args)
-            throws FileNotFoundException, ChattyExceptions {
+    private final TaskList taskList;
 
-        Ui.printWelcomeMessage();
-        Scanner sc = new Scanner(System.in);
-        TaskList taskList = Storage.load();
-        boolean inLoop = true;
+    public Chatty() throws IOException, ChattyExceptions {
+        taskList = Storage.load();
+    }
 
-        while (inLoop) {
-            try {
-                String input = sc.nextLine().trim();
-
-                if (input.isBlank()) {
-                    ChattyExceptions.emptyCommand();
-                    continue;
-                }
-
-                Command command = Parser.parseCommand(input);
-
-                switch (command) {
-                case BYE:
-                    Ui.printByeMessage();
-                    inLoop = false;
-                    break;
-
-                case LIST:
-                    Ui.listTaskMessage();
-                    taskList.list();
-                    break;
-
-                case DUE:
-                    taskList.getTasksDueOn(input);
-                    break;
-
-                case MARK, UNMARK, DELETE:
-                    taskList.markTask(command, input);
-                    Storage.writeToFile(taskList);
-                    break;
-
-                case TODO, DEADLINE, EVENT:
-                    Task toAdd = Parser.parseAddTaskCommand(command, input);
-                    taskList.add(toAdd);
-                    Ui.addTaskMessage(toAdd, taskList);
-                    Storage.writeToFile(taskList);
-                    break;
-                case FIND:
-                    String keyword = Parser.parseKeywordToFind(input);
-                    TaskList tL = taskList.find(keyword);
-                    if (tL.isEmpty()) {
-                        Ui.noMatchingTasksMessage();
-                    } else {
-                        Ui.matchingTasksMessage();
-                        tL.list();
-                    }
-                    break;
-                default:
-                    ChattyExceptions.unknownCommand();
-                }
-            } catch (ChattyExceptions | IOException e) {
-                System.out.println(e.getMessage());
+    public String getResponse(String input) {
+        try {
+            if (input.isBlank()) {
+                ChattyExceptions.emptyCommand();
             }
+
+            Command command = Parser.parseCommand(input);
+            return Parser.handleCommandType(command, taskList, input);
+
+        } catch (ChattyExceptions e) {
+            return e.getMessage();
+        } catch (IOException e) {
+            return "File error: " + e.getMessage();
         }
     }
 }
