@@ -106,7 +106,8 @@ public class Parser {
             if (byIndex == -1) {
                 ChattyExceptions.invalidDeadlineFormat();
             }
-            String DeadlineName = input.substring("deadline".length() + 1, input.indexOf("/"));
+            String DeadlineName = input.substring("deadline".length() + 1,
+                        input.indexOf("/"));
             String date = input.substring(byIndex + 4);
             try {
                 LocalDate parsedBy = LocalDate.parse(date);
@@ -148,7 +149,7 @@ public class Parser {
      * @return a {@link Task} object representing the saved task
      * @throws ChattyExceptions if the date format is invalid or the input is malformed
      */
-    public static Task parseFileTaskName(String taskDescription) throws ChattyExceptions {
+    public static Task parseTaskFromFile(String taskDescription) throws ChattyExceptions {
         int startNameIndex = taskDescription.indexOf("] ") + 2;
         if (taskDescription.contains("[T]")) {
             return new Todo(taskDescription.substring(startNameIndex));
@@ -186,7 +187,7 @@ public class Parser {
         return new Task(" ");
     }
 
-    public static String handleCommandType(Chatty.Command command,
+    public static String executeCommand(Chatty.Command command,
                                          TaskList taskList, String input) throws ChattyExceptions, IOException {
         String output = "";
         switch (command) {

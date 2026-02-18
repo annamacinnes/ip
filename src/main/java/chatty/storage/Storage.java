@@ -66,7 +66,7 @@ public class Storage {
         TaskList tasks = new TaskList();
         while (s.hasNext()) {
             String taskDescription = s.nextLine();
-            tasks.add(Parser.parseFileTaskName(taskDescription));
+            tasks.add(Parser.parseTaskFromFile(taskDescription));
 
             if (taskDescription.contains("[X]")) {
                 tasks.get(tasks.size() - 1).setComplete();

@@ -98,7 +98,7 @@ public class ParserTest {
 
     @Test
     public void parseFileTaskName_todo_createsTodo() throws ChattyExceptions {
-        Task task = Parser.parseFileTaskName("[T][ ] read book");
+        Task task = Parser.parseTaskFromFile("[T][ ] read book");
 
         assertInstanceOf(Todo.class, task);
         assertEquals("[T][ ] read book", task.toString());
@@ -106,7 +106,7 @@ public class ParserTest {
 
     @Test
     public void parseFileTaskName_deadline_createsDeadline() throws ChattyExceptions {
-        Task task = Parser.parseFileTaskName(
+        Task task = Parser.parseTaskFromFile(
                 "[D][ ] submit report (by: Mar 01 2026)"
         );
 
@@ -115,7 +115,7 @@ public class ParserTest {
 
     @Test
     public void parseFileTaskName_event_createsEvent() throws ChattyExceptions {
-        Task task = Parser.parseFileTaskName(
+        Task task = Parser.parseTaskFromFile(
                 "[E][ ] conference (from: Mar 01 2026 to: Mar 03 2026)"
         );
 

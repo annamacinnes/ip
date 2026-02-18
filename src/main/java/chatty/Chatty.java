@@ -50,8 +50,7 @@ public class Chatty {
             }
 
             Command command = Parser.parseCommand(input);
-            return Parser.handleCommandType(command, taskList, input);
-
+            return Parser.executeCommand(command, taskList, input);
         } catch (ChattyExceptions e) {
             return e.getMessage();
         } catch (IOException e) {
