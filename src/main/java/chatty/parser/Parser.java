@@ -35,6 +35,9 @@ public class Parser {
      *         if the input does not match any known command
      */
     public static Chatty.Command parseCommand(String input) {
+        assert input != null : "Input to parseCommand should not be null";
+        assert !input.isBlank(): "Input to parseCommand should not be blank";
+
         String firstWord = input.split("\\s+")[0].toLowerCase();
         try {
             return Chatty.Command.valueOf(firstWord.toUpperCase());
@@ -54,6 +57,9 @@ public class Parser {
      */
     public static int parseTaskIndex(String input, TaskList storage) throws ChattyExceptions {
         String[] parts = input.split("\\s+");
+        assert !input.isBlank(): "Input to parseTaskIndex should not be blank";
+        assert storage != null : "TaskList should not be null";
+        assert storage.size() >= 0 : "TaskList size cannot be negative";
 
         if (parts.length < 2) {
             ChattyExceptions.missingTaskNumber();
@@ -97,6 +103,9 @@ public class Parser {
      * @throws ChattyExceptions if the task description is missing or the input format is invalid
      */
     public static Task parseAddTaskCommand(Chatty.Command command, String input) throws ChattyExceptions {
+        assert command != null: "Command should not be null";
+        assert input != null: "Input should not be null";
+
         if (input.split("\\s+").length < 2) {
             ChattyExceptions.emptyDescription(command.name().toLowerCase());
         }
@@ -106,8 +115,8 @@ public class Parser {
             if (byIndex == -1) {
                 ChattyExceptions.invalidDeadlineFormat();
             }
-            String DeadlineName = input.substring("deadline".length() + 1, input.indexOf("/"));
-            String date = input.substring(byIndex + 4);
+            String DeadlineName = input.substring("deadline ".length(), input.indexOf("/"));
+            String date = input.substring(byIndex + "/by ".length());
             try {
                 LocalDate parsedBy = LocalDate.parse(date);
                 return new Deadline(DeadlineName, parsedBy);
@@ -121,9 +130,9 @@ public class Parser {
             if (fromIndex == -1 || toIndex == -1 || fromIndex >= toIndex) {
                 ChattyExceptions.invalidEventFormat();
             }
-            String name = input.substring("event".length() + 1, input.indexOf("/"));
-            String from = input.substring(fromIndex + 6, toIndex - 1);
-            String to = input.substring(toIndex + 4);
+            String name = input.substring("event ".length(), input.indexOf("/"));
+            String from = input.substring(fromIndex + "/from ".length(), toIndex - 1);
+            String to = input.substring(toIndex + "/to ".length());
             if (name.isEmpty() || from.isEmpty() || to.isEmpty()) {
                 ChattyExceptions.emptyEventFields();
             }
@@ -136,7 +145,7 @@ public class Parser {
             }
             break;
         case TODO:
-            return new Todo(input.substring("todo".length() + 1));
+            return new Todo(input.substring("todo ".length()));
         }
         return new Task(" ");
     }
@@ -149,7 +158,10 @@ public class Parser {
      * @throws ChattyExceptions if the date format is invalid or the input is malformed
      */
     public static Task parseFileTaskName(String taskDescription) throws ChattyExceptions {
-        int startNameIndex = taskDescription.indexOf("] ") + 2;
+        assert taskDescription != null : "Task description from file should not be null";
+        assert taskDescription.contains("] ") : "Saved task format should contain closing bracket";
+
+        int startNameIndex = taskDescription.indexOf("] ") + "] ".length();
         if (taskDescription.contains("[T]")) {
             return new Todo(taskDescription.substring(startNameIndex));
         } else {
@@ -159,19 +171,15 @@ public class Parser {
                 String substring = taskDescription.substring(startNameIndex, taskDescription.indexOf("(")).trim();
                 if (taskDescription.contains("[D]")) {
                     String date = taskDescription.substring(
-                            taskDescription.indexOf("(by: ") + 5,
-                            taskDescription.length() - 1
-                    ).trim();
+                            taskDescription.indexOf("(by: ") + "(by: ".length(), taskDescription.length() - 1).trim();
                     return new Deadline(substring, LocalDate.parse(date, formatter));
 
                 } else if (taskDescription.contains("[E]")) {
                     String from = taskDescription.substring(
-                            taskDescription.indexOf("from: ") + 6,
-                            taskDescription.indexOf(" to:")
+                            taskDescription.indexOf("from: ") + "from: ".length(), taskDescription.indexOf(" to:")
                     ).trim();
                     String to = taskDescription.substring(
-                            taskDescription.indexOf("to: ") + 4,
-                            taskDescription.length() - 1
+                            taskDescription.indexOf("to: ") + "to: ".length(), taskDescription.length() - 1
                     ).trim();
                     return new Event(
                             substring,
@@ -186,27 +194,52 @@ public class Parser {
         return new Task(" ");
     }
 
+    /**
+     * Handles a user command and executes the corresponding operation.
+     *
+     * <p>This method acts as the central dispatcher for command execution.
+     * Based on the provided {@code command}, it performs actions such as:
+     * <ul>
+     *     <li>Listing tasks</li>
+     *     <li>Adding tasks</li>
+     *     <li>Marking, unmarking, or deleting tasks</li>
+     *     <li>Searching for tasks</li>
+     *     <li>Filtering tasks by due date</li>
+     *     <li>Exiting the application</li>
+     * </ul>
+     *
+     * <p>For commands that modify the task list (e.g., ADD, MARK, DELETE),
+     * the updated task list is written to persistent storage.
+     *
+     * @param command  The {@code Chatty.Command} representing the user’s command type.
+     * @param taskList The {@code TaskList} containing all current tasks.
+     * @param input    The full user input string associated with the command.
+     * @return A formatted message string to be displayed to the user.
+     *
+     * @throws ChattyExceptions If the command is invalid or if parsing fails.
+     * @throws IOException If an error occurs while writing to storage.
+     */
     public static String handleCommandType(Chatty.Command command,
                                          TaskList taskList, String input) throws ChattyExceptions, IOException {
+        assert command != null : "Command should not be null";
+        assert taskList != null : "TaskList should not be null";
+        assert input != null : "Input should not be null";
+
         String output = "";
         switch (command) {
         case BYE:
             output = Ui.printByeMessage();
             break;
-
         case LIST:
             output = Ui.listTaskMessage() + taskList.list();
             break;
-
         case DUE:
             output = taskList.getTasksDueOn(input);
             break;
-
         case MARK, UNMARK, DELETE:
             output = taskList.markTask(command, input);
             Storage.writeToFile(taskList);
             break;
-
         case TODO, DEADLINE, EVENT:
             Task toAdd = Parser.parseAddTaskCommand(command, input);
             taskList.add(toAdd);
@@ -226,6 +259,7 @@ public class Parser {
         default:
             ChattyExceptions.unknownCommand();
         }
+        assert output != null : "Output message should never be null";
         return output;
     }
 }
