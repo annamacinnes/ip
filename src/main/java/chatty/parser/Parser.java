@@ -157,7 +157,7 @@ public class Parser {
      * @return a {@link Task} object representing the saved task
      * @throws ChattyExceptions if the date format is invalid or the input is malformed
      */
-    public static Task parseFileTaskName(String taskDescription) throws ChattyExceptions {
+    public static Task parseTaskFromFile(String taskDescription) throws ChattyExceptions {
         assert taskDescription != null : "Task description from file should not be null";
         assert taskDescription.contains("] ") : "Saved task format should contain closing bracket";
 
@@ -219,7 +219,7 @@ public class Parser {
      * @throws ChattyExceptions If the command is invalid or if parsing fails.
      * @throws IOException If an error occurs while writing to storage.
      */
-    public static String handleCommandType(Chatty.Command command,
+    public static String executeCommand(Chatty.Command command,
                                          TaskList taskList, String input) throws ChattyExceptions, IOException {
         assert command != null : "Command should not be null";
         assert taskList != null : "TaskList should not be null";

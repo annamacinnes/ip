@@ -93,7 +93,7 @@ public class Storage {
             assert taskDescription.contains("[")
                     : "Saved task format should contain type indicator";
 
-            Task parsedTask = Parser.parseFileTaskName(taskDescription);
+            Task parsedTask = Parser.parseTaskFromFile(taskDescription);
 
             assert parsedTask != null : "Parsed task should not be null";
             tasks.add(parsedTask);
