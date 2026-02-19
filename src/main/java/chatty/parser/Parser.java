@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 /**
  * The {@code Parser} class is responsible for interpreting user input and
@@ -55,7 +56,7 @@ public class Parser {
      * @throws ChattyExceptions if the input is missing a task number,
      *                           if the task number is invalid, or if it's not an integer
      */
-    public static int parseTaskIndex(String input, TaskList storage) throws ChattyExceptions {
+    public static ArrayList<Integer> parseTaskIndex(String input, TaskList storage) throws ChattyExceptions {
         String[] parts = input.split("\\s+");
         assert !input.isBlank(): "Input to parseTaskIndex should not be blank";
         assert storage != null : "TaskList should not be null";
@@ -66,14 +67,19 @@ public class Parser {
         }
 
         try {
-            int index = Integer.parseInt(parts[1]) - 1;
-            if (index < 0 || index >= storage.size()) {
-                ChattyExceptions.invalidTaskNumber();
+            ArrayList<Integer> indexes = new ArrayList<>();
+            for (int i = 1; i < parts.length; i++) {
+                int index = Integer.parseInt(parts[i]) - 1;
+                if (index < 0 || index >= storage.size()) {
+                    ChattyExceptions.invalidTaskNumber();
+                    break;
+                }
+                indexes.add(index);
             }
-            return index;
+            return indexes;
         } catch (NumberFormatException e) {
             ChattyExceptions.nonIntegerTaskNumber();
-            return -1; // unreachable
+            return null; // unreachable
         }
     }
 
@@ -168,18 +174,24 @@ public class Parser {
             try {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd yyyy");
 
-                String substring = taskDescription.substring(startNameIndex, taskDescription.indexOf("(")).trim();
+                String substring = taskDescription.substring(startNameIndex,
+                        taskDescription.indexOf("(")).trim();
                 if (taskDescription.contains("[D]")) {
                     String date = taskDescription.substring(
-                            taskDescription.indexOf("(by: ") + "(by: ".length(), taskDescription.length() - 1).trim();
-                    return new Deadline(substring, LocalDate.parse(date, formatter));
+                            taskDescription.indexOf("(by: ") + "(by: ".length(),
+                                    taskDescription.length() - 1)
+                                            .trim();
+                    return new Deadline(substring,
+                            LocalDate.parse(date, formatter));
 
                 } else if (taskDescription.contains("[E]")) {
                     String from = taskDescription.substring(
-                            taskDescription.indexOf("from: ") + "from: ".length(), taskDescription.indexOf(" to:")
+                            taskDescription.indexOf("from: ") + "from: ".length(),
+                                            taskDescription.indexOf(" to:")
                     ).trim();
                     String to = taskDescription.substring(
-                            taskDescription.indexOf("to: ") + "to: ".length(), taskDescription.length() - 1
+                            taskDescription.indexOf("to: ") + "to: ".length(),
+                                            taskDescription.length() - 1
                     ).trim();
                     return new Event(
                             substring,
@@ -227,9 +239,6 @@ public class Parser {
 
         String output = "";
         switch (command) {
-        case BYE:
-            output = Ui.printByeMessage();
-            break;
         case LIST:
             output = Ui.listTaskMessage() + taskList.list();
             break;

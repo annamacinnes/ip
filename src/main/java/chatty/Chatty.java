@@ -31,7 +31,6 @@ public class Chatty {
         UNMARK,
         DELETE,
         LIST,
-        BYE,
         DUE,
         FIND,
         UNKNOWN // fallback for invalid commands

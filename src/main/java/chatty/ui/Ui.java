@@ -8,11 +8,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Ui {
     public static String printWelcomeMessage() {
-        return "Hello! I'm chatty.Chatty" + String.format("What can I do for you?%n%n");
-    }
-
-    public static String printByeMessage() {
-        return "Bye. Hope to see you again!";
+        return "Hello! I'm Chatty! " + String.format("What can I do for you?%n%n");
     }
 
     public static String markTaskMessage(int taskNum, TaskList storage) {

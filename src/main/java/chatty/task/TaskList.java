@@ -179,25 +179,40 @@ public class TaskList {
         return null;
     }
 
+    /**
+     * Marks tasks as complete or incomplete.
+     *
+     * @param input The user input containing the tasks to mark.
+     * @return A formatted message containing the marked tasks.
+     * @throws ChattyExceptions If the input is invalid or improperly formatted.
+     */
     public String markTask(Chatty.Command command, String input)
             throws ChattyExceptions {
-        int taskNum = Parser.parseTaskIndex(input, this);
-        assert taskNum >= 0 && taskNum < tasks.size() : "Parsed task index invalid";
-        switch (command) {
-        case MARK:
-            this.get(taskNum).setComplete();
-            return Ui.markTaskMessage(taskNum, this);
+        ArrayList<Integer> taskIndexes = Parser.parseTaskIndex(input, this);
+        assert !taskIndexes.isEmpty(): "List of task indexes to mark should not be empty";
+        assert taskIndexes != null : "List of task indexes should not be null";
+        String toReturn = "";
 
-        case UNMARK:
-            tasks.get(taskNum).setIncomplete();
-            return Ui.unmarkTaskMessage(taskNum, this);
+        for (Integer taskIndex : taskIndexes) {
+            assert taskIndex >= 0 && taskIndex < tasks.size() : "Parsed task index invalid";
+            switch (command) {
+            case MARK:
+                this.get(taskIndex).setComplete();
+                toReturn += Ui.markTaskMessage(taskIndex, this);
+                break;
+            case UNMARK:
+                tasks.get(taskIndex).setIncomplete();
+                toReturn +=  Ui.unmarkTaskMessage(taskIndex, this);
+                break;
+            case DELETE:
+                Task task = this.get(taskIndex);
+                this.remove(taskIndex);
+                toReturn += Ui.deleteTaskMessage(task, this);
+                break;
+            }
 
-        case DELETE:
-            Task task = this.get(taskNum);
-            this.remove(taskNum);
-            return Ui.deleteTaskMessage(task, this);
         }
-        return null;
+        return toReturn;
     }
 
 }

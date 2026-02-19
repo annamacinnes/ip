@@ -1,4 +1,5 @@
 import chatty.Chatty;
+import chatty.ui.Ui;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -20,8 +21,8 @@ public class MainWindow extends AnchorPane {
 
     private Chatty chatty;
 
-    private Image userImage = new Image(this.getClass().getResourceAsStream("/images/chattyMan1.png"));
-    private Image chattyImage = new Image(this.getClass().getResourceAsStream("/images/chattyMan2.png"));
+    private final Image userImage = new Image(this.getClass().getResourceAsStream("/images/chattyMan1.png"));
+    private final Image chattyImage = new Image(this.getClass().getResourceAsStream("/images/chattyMan2.png"));
     @FXML
     public void initialize() {
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
@@ -30,6 +31,9 @@ public class MainWindow extends AnchorPane {
     /** Injects the Chatty instance */
     public void setChatty(Chatty c) {
         chatty = c;
+        dialogContainer.getChildren().add(
+                DialogBox.getChattyDialog(Ui.printWelcomeMessage(), chattyImage)
+        );
     }
 
     /**

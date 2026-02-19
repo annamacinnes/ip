@@ -6,6 +6,7 @@ import chatty.parser.Parser;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,8 +33,10 @@ public class ParserTest {
         list.add(new Todo("a"));
         list.add(new Todo("b"));
 
-        int index = Parser.parseTaskIndex("delete 2", list);
-        assertEquals(1, index);
+        ArrayList<Integer> index = Parser.parseTaskIndex("delete 2", list);
+        ArrayList<Integer> expected = new ArrayList<>();
+        expected.add(1);
+        assertEquals(expected, index);
     }
 
     @Test
