@@ -1,5 +1,7 @@
 package chatty.task;
 
+import java.time.LocalDate;
+
 /**
  * Represents a generic task in the Chatty application.
  *
@@ -7,7 +9,7 @@ package chatty.task;
  * Specific task types such as {@code Todo}, {@code Deadline}, and
  * {@code Event} extend this class.</p>
  */
-public class Task {
+public abstract class Task {
     /**
      * The description of the task.
      */
@@ -57,4 +59,6 @@ public class Task {
     public String getName() {
         return this.name;
     }
+
+    public abstract boolean willOccurOn(LocalDate date);
 }

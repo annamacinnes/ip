@@ -7,9 +7,14 @@ import chatty.ui.Ui;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Array;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * Manages a collection of {@code Task} objects.
  *
@@ -19,9 +24,13 @@ import java.util.ArrayList;
  *
  * <p>This class acts as the main container for all tasks in the Chatty application.
  */
-public class TaskList {
+public class TaskList implements Iterable<Task> {
     private final ArrayList<Task> tasks;
 
+    @Override
+    public Iterator<Task> iterator() {
+        return tasks.iterator();
+    }
     /**
      * Constructs an empty {@code TaskList}.
      */
@@ -81,22 +90,6 @@ public class TaskList {
     }
 
     /**
-     * Returns a formatted string representation of all tasks in the list.
-     *
-     * @return A numbered list of tasks as a {@code String}.
-     */
-    public String list() {
-        int i = 1;
-        String list = "";
-        for (Task task : tasks) {
-            list += String.format("%d. %s%n", i, task.toString());
-            i++;
-        }
-        list += String.format("%n");
-        return list;
-    }
-
-    /**
      * Returns a new {@code TaskList} containing tasks whose names
      * contain the specified keyword.
      *
@@ -114,24 +107,6 @@ public class TaskList {
     }
 
     /**
-     * Writes all tasks in the list to the specified {@code FileWriter}.
-     *
-     * @param fw The {@code FileWriter} used to write task data.
-     * @throws RuntimeException If an {@code IOException} occurs during writing.
-     */
-    public void writeToFile(FileWriter fw) {
-        int i = 1;
-        for (Task task : tasks) {
-            try {
-                fw.write(String.format("%d. %s%n", i, task.toString()));
-                i++;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    /**
      * Returns a formatted string of tasks due on a specified date.
      *
      * <p>The input must contain a date in ISO-8601 format (yyyy-MM-dd).
@@ -141,78 +116,68 @@ public class TaskList {
      *   <li>Deadlines due on the specified date</li>
      * </ul>
      *
-     * @param input The user input containing the date.
+     * @param date The date the user searched for.
      * @return A formatted message containing relevant tasks,
      *         or a message indicating no relevant tasks were found.
      * @throws ChattyExceptions If the input is invalid or improperly formatted.
      */
-    public String getTasksDueOn(String input) throws ChattyExceptions {
-        if (input.split("\\s+").length < 2) {
-            ChattyExceptions.emptyDescription("due");
-        }
-        TaskList toPrint = new TaskList();
+    public TaskList getTasksDueOn(LocalDate date) throws ChattyExceptions {
+        TaskList tasksDueOn = new TaskList();
         try {
-            LocalDate dateToFind = LocalDate.parse(input.split("\\s+")[1]);
             for (Task task : tasks) {
-                if (task.getType().equalsIgnoreCase("event")) {
-                    Event event = (Event) task;
-                    if (event.getStartDate().isEqual(dateToFind)
-                            || event.getEndDate().isEqual(dateToFind)
-                            || (event.getEndDate().isAfter(dateToFind) && event.getStartDate().isBefore(dateToFind))) {
-                        toPrint.add(event);
-                    }
-                } else if ((task.getType().equalsIgnoreCase("deadline"))) {
-                    Deadline deadline = (Deadline) task;
-                    if (deadline.getDeadline().isEqual(dateToFind)) {
-                        toPrint.add(deadline);
-                    }
+                if (task.willOccurOn(date)) {
+                    tasksDueOn.add(task);
                 }
-            }
-            if (toPrint.isEmpty()) {
-                return Ui.noRelevantTaskMessage();
-            } else {
-                return Ui.relevantTasksMessage(dateToFind) + toPrint.list();
             }
         } catch (DateTimeException e) {
             ChattyExceptions.invalidDateFormat();
         }
-        return null;
+        return tasksDueOn;
     }
 
     /**
      * Marks tasks as complete or incomplete.
      *
-     * @param input The user input containing the tasks to mark.
+     * @param taskIndexes the list of task indexes the user wishes to mark.
      * @return A formatted message containing the marked tasks.
      * @throws ChattyExceptions If the input is invalid or improperly formatted.
      */
-    public String markTask(Chatty.Command command, String input)
-            throws ChattyExceptions {
-        ArrayList<Integer> taskIndexes = Parser.parseTaskIndex(input, this);
-        assert !taskIndexes.isEmpty(): "List of task indexes to mark should not be empty";
+    public TaskList markTask(List<Integer> taskIndexes) {
+        assert !taskIndexes.isEmpty() : "List of task indexes to mark should not be empty";
         assert taskIndexes != null : "List of task indexes should not be null";
-        String toReturn = "";
 
+        TaskList markedTasks = new TaskList();
         for (Integer taskIndex : taskIndexes) {
             assert taskIndex >= 0 && taskIndex < tasks.size() : "Parsed task index invalid";
-            switch (command) {
-            case MARK:
-                this.get(taskIndex).setComplete();
-                toReturn += Ui.markTaskMessage(taskIndex, this);
-                break;
-            case UNMARK:
-                tasks.get(taskIndex).setIncomplete();
-                toReturn +=  Ui.unmarkTaskMessage(taskIndex, this);
-                break;
-            case DELETE:
-                Task task = this.get(taskIndex);
-                this.remove(taskIndex);
-                toReturn += Ui.deleteTaskMessage(task, this);
-                break;
-            }
-
+            this.get(taskIndex).setComplete();
+            markedTasks.add(tasks.get(taskIndex));
         }
-        return toReturn;
+        return markedTasks;
+    }
+
+    public TaskList deleteTask(List<Integer> taskIndexes) {
+        TaskList deletedTasks = new TaskList();
+
+        taskIndexes.sort(Collections.reverseOrder());
+
+        for (Integer taskIndex : taskIndexes) {
+            Task task = this.get(taskIndex);
+            deletedTasks.add(task);
+            this.remove(taskIndex);
+        }
+
+        return deletedTasks;
+    }
+
+
+    public TaskList unmarkTask(List<Integer> taskIndexes) {
+        TaskList unmarkedTasks = new TaskList();
+
+        for (Integer taskIndex : taskIndexes) {
+            tasks.get(taskIndex).setIncomplete();
+            unmarkedTasks.add(tasks.get(taskIndex));
+        }
+        return unmarkedTasks;
     }
 
 }

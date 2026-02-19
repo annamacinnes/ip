@@ -45,6 +45,13 @@ public class Event extends Task {
         return "event";
     }
 
+    @Override
+    public boolean willOccurOn(LocalDate date) {
+        return this.getStartDate().isEqual(date)
+                || this.getEndDate().isEqual(date)
+                || (this.getEndDate().isAfter(date) && this.getStartDate().isBefore(date));
+    }
+
     /**
      * Returns a string representation of the event task for storage and display.
      *

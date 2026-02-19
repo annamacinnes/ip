@@ -11,6 +11,7 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The {@code Parser} class is responsible for interpreting user input and
@@ -27,6 +28,18 @@ import java.util.ArrayList;
  * <p>It also provides utility methods to extract task indices and parse task data from saved files.
  */
 public class Parser {
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd yyyy");
+    private static final String BY_FLAG = "/by";
+    private static final String FROM_FLAG = "/from";
+    private static final String TO_FLAG = "/to";
+    private static final String FILE_BY_PREFIX = "(by: ";
+    private static final String FILE_FROM_PREFIX = "from: ";
+    private static final String FILE_TO_PREFIX = "to: ";
+    private static final String FILE_EVENT_SEPARATOR = " to:";
+    private static final String FILE_EVENT_LABEL = "[E]";
+    private static final String FILE_TODO_LABEL = "[T]";
+    private static final String FILE_DEADLINE_LABEL = "[D]";
+    private static final String FILE_STATUS_SUFFIX = "] ";
 
     /**
      * Parses a user input string and converts it into a {@link Chatty.Command}.
@@ -72,7 +85,7 @@ public class Parser {
                 int index = Integer.parseInt(parts[i]) - 1;
                 if (index < 0 || index >= storage.size()) {
                     ChattyExceptions.invalidTaskNumber();
-                    break;
+                    return new ArrayList<>();
                 }
                 indexes.add(index);
             }
@@ -101,6 +114,88 @@ public class Parser {
     }
 
     /**
+     * Parses a {@code deadline} command input string and constructs a {@link Deadline} task.
+     *
+     * <p>The expected input format is:
+     * <pre>
+     * deadline &lt;description&gt; /by &lt;yyyy-MM-dd&gt;
+     * </pre>
+     *
+     * <p>Example:
+     * <pre>
+     * deadline submit report /by 2026-03-01
+     * </pre>
+     *
+     * @param input The full user input string containing the deadline command.
+     * @return A {@link Deadline} object with the parsed description and due date.
+     * @throws ChattyExceptions If:
+     * <ul>
+     *     <li>The {@code /by} flag is missing</li>
+     *     <li>The description is empty</li>
+     *     <li>The date is missing or not in valid {@code yyyy-MM-dd} format</li>
+     * </ul>
+     */
+    public static Task parseDeadline(String input) throws ChattyExceptions {
+        int byIndex = input.indexOf(BY_FLAG);
+        if (byIndex == -1) {
+            ChattyExceptions.invalidDeadlineFormat();
+        }
+        String DeadlineName = input.substring("deadline ".length(), input.indexOf(BY_FLAG));
+        String date = input.substring(byIndex + BY_FLAG.length() + 1);
+        try {
+            LocalDate parsedBy = LocalDate.parse(date);
+            return new Deadline(DeadlineName, parsedBy);
+        } catch (DateTimeException e) {
+            ChattyExceptions.invalidDateFormat();
+        }
+        throw new AssertionError("Unreachable code reached in parseDeadline");
+    }
+
+    /**
+     * Parses an {@code event} command input string and constructs an {@link Event} task.
+     *
+     * <p>The expected input format is:
+     * <pre>
+     * event &lt;description&gt; /from &lt;yyyy-MM-dd&gt; /to &lt;yyyy-MM-dd&gt;
+     * </pre>
+     *
+     * <p>Example:
+     * <pre>
+     * event project meeting /from 2026-03-01 /to 2026-03-02
+     * </pre>
+     *
+     * @param input The full user input string containing the event command.
+     * @return An {@link Event} object with the parsed description, start date, and end date.
+     * @throws ChattyExceptions If:
+     * <ul>
+     *     <li>The {@code /from} or {@code /to} flag is missing</li>
+     *     <li>The description, start date, or end date is empty</li>
+     *     <li>Either date is not in valid {@code yyyy-MM-dd} format</li>
+     * </ul>
+     */
+    public static Task parseEvent(String input) throws ChattyExceptions {
+        int fromIndex = input.indexOf(FROM_FLAG);
+        int toIndex = input.indexOf(TO_FLAG);
+        if (fromIndex == -1 || toIndex == -1 || fromIndex >= toIndex) {
+            ChattyExceptions.invalidEventFormat();
+        }
+        String name = input.substring("event ".length(), input.indexOf(FROM_FLAG));
+        String from = input.substring(fromIndex + FROM_FLAG.length() + 1, toIndex - 1);
+        String to = input.substring(toIndex + TO_FLAG.length() + 1);
+        if (name.isEmpty() || from.isEmpty() || to.isEmpty()) {
+            ChattyExceptions.emptyEventFields();
+        }
+        try {
+            LocalDate parsedFrom = LocalDate.parse(from);
+            LocalDate parsedTo = LocalDate.parse(to);
+            return new Event(name, parsedFrom, parsedTo);
+        } catch (DateTimeException e) {
+            ChattyExceptions.invalidDateFormat();
+        }
+        throw new AssertionError("Unreachable code reached in parseEvent");
+    }
+
+    /**
      * Parses a user input string to create a new {@link Task} object for add-task commands.
      *
      * @param command the {@link Chatty.Command} type (TODO, DEADLINE, EVENT)
@@ -115,45 +210,50 @@ public class Parser {
         if (input.split("\\s+").length < 2) {
             ChattyExceptions.emptyDescription(command.name().toLowerCase());
         }
-        switch (command) {
-        case DEADLINE:
-            int byIndex = input.indexOf("/by");
-            if (byIndex == -1) {
-                ChattyExceptions.invalidDeadlineFormat();
-            }
-            String DeadlineName = input.substring("deadline ".length(), input.indexOf("/"));
-            String date = input.substring(byIndex + "/by ".length());
-            try {
-                LocalDate parsedBy = LocalDate.parse(date);
-                return new Deadline(DeadlineName, parsedBy);
-            } catch (DateTimeException e) {
-                ChattyExceptions.invalidDateFormat();
-            }
-            break;
-        case EVENT:
-            int fromIndex = input.indexOf("/from");
-            int toIndex = input.indexOf("/to");
-            if (fromIndex == -1 || toIndex == -1 || fromIndex >= toIndex) {
-                ChattyExceptions.invalidEventFormat();
-            }
-            String name = input.substring("event ".length(), input.indexOf("/"));
-            String from = input.substring(fromIndex + "/from ".length(), toIndex - 1);
-            String to = input.substring(toIndex + "/to ".length());
-            if (name.isEmpty() || from.isEmpty() || to.isEmpty()) {
-                ChattyExceptions.emptyEventFields();
-            }
-            try {
-                LocalDate parsedFrom = LocalDate.parse(from);
-                LocalDate parsedTo = LocalDate.parse(to);
-                return new Event(name, parsedFrom, parsedTo);
-            } catch (DateTimeException e) {
-                ChattyExceptions.invalidDateFormat();
-            }
-            break;
-        case TODO:
-            return new Todo(input.substring("todo ".length()));
-        }
-        return new Task(" ");
+        return switch (command) {
+            case DEADLINE -> parseDeadline(input);
+            case EVENT -> parseEvent(input);
+            case TODO -> new Todo(input.substring("todo ".length()));
+            default -> throw new AssertionError("Unreachable code reached in parseAddTaskCommand");
+        };
+    }
+
+    /**
+     * Parses a user input string to create a new {@link Deadline} object for add-task commands.
+     *
+     * @param taskDescription the description of the task from the file
+     * @param taskName  the name of the task
+     * @return a {@link Deadline} object corresponding to the input command
+     */
+    private static Deadline parseDeadlineFromFile(String taskDescription, String taskName) {
+        String date = taskDescription.substring(
+                        taskDescription.indexOf(FILE_BY_PREFIX) + FILE_BY_PREFIX.length(),
+                        taskDescription.length() - 1)
+                .trim();
+        return new Deadline(taskName, LocalDate.parse(date, formatter));
+    }
+
+    /**
+     * Parses a user input string to create a new {@link Event} object for add-task commands.
+     *
+     * @param taskDescription the description of the task from the file
+     * @param taskName  the name of the task
+     * @return a {@link Event} object corresponding to the input command
+     */
+    private static Event parseEventFromFile(String taskDescription, String taskName) {
+        String from = taskDescription.substring(
+                taskDescription.indexOf(FILE_FROM_PREFIX) + FILE_FROM_PREFIX.length(),
+                taskDescription.indexOf(FILE_EVENT_SEPARATOR))
+                .trim();
+        String to = taskDescription.substring(
+                taskDescription.indexOf(FILE_TO_PREFIX) + FILE_TO_PREFIX.length(),
+                taskDescription.length() - 1)
+                .trim();
+        return new Event(
+                taskName,
+                LocalDate.parse(from, formatter),
+                LocalDate.parse(to, formatter)
+        );
     }
 
     /**
@@ -165,45 +265,40 @@ public class Parser {
      */
     public static Task parseTaskFromFile(String taskDescription) throws ChattyExceptions {
         assert taskDescription != null : "Task description from file should not be null";
-        assert taskDescription.contains("] ") : "Saved task format should contain closing bracket";
+        assert taskDescription.contains(FILE_STATUS_SUFFIX) : "Saved task format should contain closing bracket";
 
-        int startNameIndex = taskDescription.indexOf("] ") + "] ".length();
-        if (taskDescription.contains("[T]")) {
-            return new Todo(taskDescription.substring(startNameIndex));
+        int startOfNameIndex = taskDescription.indexOf(FILE_STATUS_SUFFIX) + FILE_STATUS_SUFFIX.length();
+
+        if (taskDescription.contains(FILE_TODO_LABEL)) {
+            return new Todo(taskDescription.substring(startOfNameIndex));
         } else {
             try {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd yyyy");
+                String taskName = taskDescription.substring(startOfNameIndex, taskDescription.indexOf("(")).trim();
+                if (taskDescription.contains(FILE_DEADLINE_LABEL)) {
+                    return parseDeadlineFromFile(taskDescription, taskName);
 
-                String substring = taskDescription.substring(startNameIndex,
-                        taskDescription.indexOf("(")).trim();
-                if (taskDescription.contains("[D]")) {
-                    String date = taskDescription.substring(
-                            taskDescription.indexOf("(by: ") + "(by: ".length(),
-                                    taskDescription.length() - 1)
-                                            .trim();
-                    return new Deadline(substring,
-                            LocalDate.parse(date, formatter));
-
-                } else if (taskDescription.contains("[E]")) {
-                    String from = taskDescription.substring(
-                            taskDescription.indexOf("from: ") + "from: ".length(),
-                                            taskDescription.indexOf(" to:")
-                    ).trim();
-                    String to = taskDescription.substring(
-                            taskDescription.indexOf("to: ") + "to: ".length(),
-                                            taskDescription.length() - 1
-                    ).trim();
-                    return new Event(
-                            substring,
-                            LocalDate.parse(from, formatter),
-                            LocalDate.parse(to, formatter)
-                    );
+                } else if (taskDescription.contains(FILE_EVENT_LABEL)) {
+                    return parseEventFromFile(taskDescription, taskName);
                 }
             } catch (DateTimeException e) {
                 ChattyExceptions.invalidDateFormat();
             }
         }
-        return new Task(" ");
+        throw new AssertionError("Unreachable code reached in parseTaskFromFile");
+    }
+
+    /**
+     * Parses a task description from user input and reconstructs the corresponding {@link LocalDate}.
+     *
+     * @param input the task description string from the file
+     * @return a {@link LocalDate} object representing the relevant task date
+     * @throws ChattyExceptions if the date format is invalid or the input is malformed
+     */
+    public static LocalDate parseDateToFind(String input) throws ChattyExceptions {
+        if (input.split("\\s+").length < 2) {
+            ChattyExceptions.emptyDescription("due");
+        }
+        return LocalDate.parse(input.split("\\s+")[1]);
     }
 
     /**
@@ -236,39 +331,117 @@ public class Parser {
         assert command != null : "Command should not be null";
         assert taskList != null : "TaskList should not be null";
         assert input != null : "Input should not be null";
-
-        String output = "";
         switch (command) {
         case LIST:
-            output = Ui.listTaskMessage() + taskList.list();
-            break;
+            return Ui.listTaskMessage(taskList);
         case DUE:
-            output = taskList.getTasksDueOn(input);
-            break;
-        case MARK, UNMARK, DELETE:
-            output = taskList.markTask(command, input);
-            Storage.writeToFile(taskList);
-            break;
+            return executeDueCommand(taskList, input);
+        case MARK:
+            return executeMarkCommand(taskList, input);
+        case UNMARK:
+            return executeUnmarkCommand(taskList, input);
+        case DELETE:
+            return executeDeleteCommand(taskList, input);
         case TODO, DEADLINE, EVENT:
-            Task toAdd = Parser.parseAddTaskCommand(command, input);
-            taskList.add(toAdd);
-            output = Ui.addTaskMessage(toAdd, taskList);
-            Storage.writeToFile(taskList);
-            break;
+            return executeAddTaskCommand(taskList, input, command);
         case FIND:
-            String keyword = Parser.parseKeywordToFind(input);
-            TaskList tL = taskList.find(keyword);
-            if (tL.isEmpty()) {
-                output = Ui.noMatchingTasksMessage();
-            } else {
-                output = Ui.matchingTasksMessage();
-                output += tL.list();
-            }
-            break;
+            return executeFindCommand(taskList, input);
         default:
             ChattyExceptions.unknownCommand();
         }
-        assert output != null : "Output message should never be null";
-        return output;
+        throw new AssertionError("Unreachable code reached in executeCommand");
+    }
+
+    /**
+     * Executes the Due command and returns the corresponding {@link Ui} message.
+     *
+     * @param input the task description string from the file
+     * @param taskList the list of tasks to search from
+     * @return a {@link String} object representing the corresponding {@link Ui} message
+     * @throws ChattyExceptions if the date format is invalid or the input is malformed
+     */
+    public static String executeDueCommand(TaskList taskList, String input) throws ChattyExceptions {
+        LocalDate date = Parser.parseDateToFind(input);
+        TaskList tasksDue = taskList.getTasksDueOn(date);
+        return Ui.dueTasksMessage(date, tasksDue);
+    }
+
+    /**
+     * Executes the Mark command and returns the corresponding {@link Ui} message.
+     *
+     * @param input the task description string from the file
+     * @param taskList the list of tasks to mark tasks from
+     * @return a {@link String} object representing the corresponding {@link Ui} message
+     * @throws ChattyExceptions if the date format is invalid or the input is malformed
+     */
+    public static String executeMarkCommand(TaskList taskList, String input) throws ChattyExceptions, IOException {
+        List<Integer> taskIndexes = Parser.parseTaskIndex(input, taskList);
+        assert taskIndexes != null;
+        TaskList markedTasks = taskList.markTask(taskIndexes);
+        Storage.writeToFile(taskList);
+        return Ui.markTaskMessage(markedTasks);
+    }
+
+    /**
+     * Executes the Unmark command and returns the corresponding {@link Ui} message.
+     *
+     * @param input the task description string from the file
+     * @param taskList the list of tasks to unmark tasks from
+     * @return a {@link String} object representing the corresponding {@link Ui} message
+     * @throws ChattyExceptions if the date format is invalid or the input is malformed
+     */
+    public static String executeUnmarkCommand(TaskList taskList, String input) throws ChattyExceptions, IOException {
+        List<Integer> taskIndexes = parseTaskIndex(input, taskList);
+        assert taskIndexes != null;
+        TaskList unmarkedTasks = taskList.unmarkTask(taskIndexes);
+        Storage.writeToFile(taskList);
+        return Ui.unmarkTaskMessage(unmarkedTasks);
+    }
+
+    /**
+     * Executes the Delete command and returns the corresponding {@link Ui} message.
+     *
+     * @param input the task description string from the file
+     * @param taskList the list of tasks to delete tasks from
+     * @return a {@link String} object representing the corresponding {@link Ui} message
+     * @throws ChattyExceptions if the date format is invalid or the input is malformed
+     */
+    public static String executeDeleteCommand(TaskList taskList, String input) throws ChattyExceptions, IOException {
+        List<Integer> taskIndexes = parseTaskIndex(input, taskList);
+        assert taskIndexes != null;
+        TaskList deletedTasks = taskList.deleteTask(taskIndexes);
+        Storage.writeToFile(taskList);
+        return Ui.deleteTaskMessage(taskList, deletedTasks);
+    }
+
+    /**
+     * Executes the (TODO/DEADLINE/EVENT) command and returns the corresponding {@link Ui} message.
+     *
+     * @param command the command that invoked this execution (TODO, DEADLINE, EVENT)
+     * @param input the task description string from the file
+     * @param taskList the list of tasks to add tasks to
+     * @return a {@link String} object representing the corresponding {@link Ui} message
+     * @throws ChattyExceptions if the date format is invalid or the input is malformed
+     */
+    public static String executeAddTaskCommand(TaskList taskList, String input, Chatty.Command command)
+            throws IOException, ChattyExceptions {
+        Task toAdd = parseAddTaskCommand(command, input);
+        taskList.add(toAdd);
+        Storage.writeToFile(taskList);
+        return Ui.addTaskMessage(toAdd, taskList);
+    }
+
+    /**
+     * Executes the Find command and returns the corresponding {@link Ui} message.
+     *
+     * @param input the task description string from the file
+     * @param taskList the list of tasks to find tasks from
+     * @return a {@link String} object representing the corresponding {@link Ui} message
+     * @throws ChattyExceptions if the date format is invalid or the input is malformed
+     */
+    public static String executeFindCommand(TaskList taskList, String input) throws ChattyExceptions {
+        String keyword = parseKeywordToFind(input);
+        TaskList tL = taskList.find(keyword);
+        return Ui.matchingTasksMessage(tL);
     }
 }

@@ -39,8 +39,7 @@ public class Storage {
      */
     public static void writeToFile(TaskList tasksToAdd) throws IOException {
         assert tasksToAdd != null : "TaskList passed to writeToFile should not be null";
-        assert FILE_PATH != null && !FILE_PATH.isBlank()
-                : "FILE_PATH should not be null or blank";
+        assert FILE_PATH != null && !FILE_PATH.isBlank() : "FILE_PATH should not be null or blank";
 
         File file = new File(FILE_PATH);
         File parent = file.getParentFile();
@@ -51,7 +50,11 @@ public class Storage {
         assert parent.exists() : "Parent directory should exist after mkdirs()";
 
         try (FileWriter fw = new FileWriter(FILE_PATH)) {
-            tasksToAdd.writeToFile(fw);
+            int i = 1;
+            for (Task task : tasksToAdd) {
+                fw.write(String.format("%d. %s%n", i, task.toString()));
+                i++;
+            }
         } catch (IOException e) {
             Ui.loadErrorMessage(e.getMessage());
         }
@@ -69,35 +72,27 @@ public class Storage {
      * @throws ChattyExceptions if a task cannot be parsed correctly
      */
     public static TaskList load() throws ChattyExceptions, IOException {
-        assert FILE_PATH != null && !FILE_PATH.isBlank()
-                : "FILE_PATH should not be null or blank";
+        assert FILE_PATH != null && !FILE_PATH.isBlank() : "FILE_PATH should not be null or blank";
 
         File file = new File(FILE_PATH);
         if (!file.exists()) {
             file.createNewFile();
         }
         File parent = file.getParentFile();
-
         assert parent != null : "Parent directory should not be null";
-
         parent.mkdirs();
-
         assert file.exists() : "File should exist before loading";
-
         Scanner s = new Scanner(file);
         assert s != null : "Scanner should not be null";
         TaskList tasks = new TaskList();
         while (s.hasNext()) {
             String taskDescription = s.nextLine();
             assert taskDescription != null : "Task description line should not be null";
-            assert taskDescription.contains("[")
-                    : "Saved task format should contain type indicator";
+            assert taskDescription.contains("[") : "Saved task format should contain type indicator";
 
             Task parsedTask = Parser.parseTaskFromFile(taskDescription);
-
             assert parsedTask != null : "Parsed task should not be null";
             tasks.add(parsedTask);
-
             if (taskDescription.contains("[X]")) {
                 assert tasks.size() > 0 : "There must be a task before marking complete";
                 tasks.get(tasks.size() - 1).setComplete();
