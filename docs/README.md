@@ -74,44 +74,65 @@ Chatty supports three types of tasks:
 ### Viewing all tasks
 To see all tasks in your list:
 ```list```
+
 Chatty will display all tasks with their corresponding numbers
 
 ### Adding Tasks
 #### Add a Todo
 ```todo <description>```
+
 Example:
+
 ```todo revise Java```
 #### Add a Deadline
 ```deadline <description> /by <date>```
+
 Example:
+
 ```deadline submit assignment /by 2026-03-10```
+
 #### Add an Event
 ```event <description> /from <start date> /to <end date>```
+
 Example:
+
 ```event hackathon /from 2026-03-01 /to 2026-03-03```
 ### Marking Tasks as Done
 ```mark <task number>```
+
 Example:
+
 ```mark 1```
+
 Chatty will mark the task as completed.
 ### Unmarking Tasks
 ```unmark <task number>```
+
 Example:
+
 ```unmark 1```
 ### Deleting Tasks
 ```delete <task number>```
+
 Example:
+
 ```delete 2```
 Chatty will remove the task from your list.
 ### Finding Tasks
 ```find <keyword>```
+
 Example:
+
 ```find meeting```
+
 Chatty will show all tasks containing the keyword.
 ### Due Tasks
 ```due <date>```
+
 Example:
+
 ```due 2026-03-03```
+
 Chatty will show all tasks occuring/due on the date.
 
 ## Task Numbering
