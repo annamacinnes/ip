@@ -38,12 +38,12 @@ Chatty supports three types of tasks:
    </tr>
    <tr>
       <td>Add deadline</td>
-      <td>deadline (description) /by <date></td>
+      <td>deadline (description) /by (date)</td>
       <td>deadline submit report /by 2026-03-01</td>
    </tr>
    <tr>
       <td>Add event</td>
-      <td>event (description) /from (date) /to <date></td>
+      <td>event (description) /from (date) /to (date)</td>
       <td>event project meeting /from 2026-03-01 /to 2026-03-02</td>
    </tr>
    <tr>
@@ -55,15 +55,18 @@ Chatty supports three types of tasks:
       <td>Unmark task</td>
       <td>unmark (task number)</td>
       <td>unmark 2</td>
-   </tr><tr>
+   </tr>
+   <tr>
       <td>Delete task</td>
       <td>delete (task number)</td>
       <td>delete 3</td>
-   </tr><tr>
+   </tr>
+   <tr>
       <td>Find tasks</td>
       <td>find (keyword)</td>
       <td>find book</td>
-   </tr><tr>
+   </tr>
+   <tr>
       <td>Tasks due</td>
       <td>due (date)</td>
       <td>due 2026-03-02</td>
@@ -71,20 +74,26 @@ Chatty supports three types of tasks:
 </table>
 
 ## Features in Detail
+
 ### Viewing all tasks
+
 To see all tasks in your list:
 ```list```
 
 Chatty will display all tasks with their corresponding numbers
 
 ### Adding Tasks
+
 #### Add a Todo
+
 ```todo <description>```
 
 Example:
 
 ```todo revise Java```
+
 #### Add a Deadline
+
 ```deadline <description> /by <date>```
 
 Example:
@@ -92,12 +101,15 @@ Example:
 ```deadline submit assignment /by 2026-03-10```
 
 #### Add an Event
+
 ```event <description> /from <start date> /to <end date>```
 
 Example:
 
 ```event hackathon /from 2026-03-01 /to 2026-03-03```
+
 ### Marking Tasks as Done
+
 ```mark <task number>```
 
 Example:
@@ -105,20 +117,27 @@ Example:
 ```mark 1```
 
 Chatty will mark the task as completed.
+
 ### Unmarking Tasks
+
 ```unmark <task number>```
 
 Example:
 
 ```unmark 1```
+
 ### Deleting Tasks
+
 ```delete <task number>```
 
 Example:
 
 ```delete 2```
+
 Chatty will remove the task from your list.
+
 ### Finding Tasks
+
 ```find <keyword>```
 
 Example:
@@ -126,7 +145,9 @@ Example:
 ```find meeting```
 
 Chatty will show all tasks containing the keyword.
+
 ### Due Tasks
+
 ```due <date>```
 
 Example:
@@ -136,12 +157,14 @@ Example:
 Chatty will show all tasks occuring/due on the date.
 
 ## Task Numbering
+
 <ul>
    <li>Tasks are numbered starting from 1</li>
    <li>Always use the task number shown in the list command</li>
 </ul>
 
 ## Error Handling
+
 Chatty will notify you if:
 <ul>
    <li>You enter an invalid command</li>
@@ -152,6 +175,7 @@ Chatty will notify you if:
 Follow the message instructions to correct your input. 
 
 ## Data Storage
+
 <ul>
    <li>All tasks are automatically saved to a file.</li>
    <li>When you restart Chatty, your previous tasks will be loaded</li>
