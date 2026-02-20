@@ -41,11 +41,6 @@ public class Event extends Task {
     }
 
     @Override
-    public String getType() {
-        return "event";
-    }
-
-    @Override
     public boolean willOccurOn(LocalDate date) {
         return this.getStartDate().isEqual(date)
                 || this.getEndDate().isEqual(date)

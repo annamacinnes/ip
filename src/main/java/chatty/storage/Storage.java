@@ -25,8 +25,7 @@ public class Storage {
     /**
      * The file path where Chatty task data is stored.
      */
-    private static final String FILE_PATH =
-            "/Users/annamacinnes/ip/text-ui-test/data/chatty.txt";
+    private static final String FILE_PATH = "data" + File.separator + "chatty.txt";;
 
     /**
      * Writes the current task list to the storage file.

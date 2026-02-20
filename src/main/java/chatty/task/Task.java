@@ -52,12 +52,12 @@ public abstract class Task {
         this.isComplete = false;
     }
 
-    public String getType() {
-        return "todo";
-    }
-
     public String getName() {
         return this.name;
+    }
+
+    public boolean isComplete() {
+        return this.isComplete;
     }
 
     public abstract boolean willOccurOn(LocalDate date);
