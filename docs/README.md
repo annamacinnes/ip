@@ -33,39 +33,39 @@ Chatty supports three types of tasks:
    </tr>
    <tr>
       <td>Add todo</td>
-      <td>todo <description></td>
+      <td>todo (description)</td>
       <td>todo read book</td>
    </tr>
    <tr>
       <td>Add deadline</td>
-      <td>deadline <description> /by <date></td>
+      <td>deadline (description) /by <date></td>
       <td>deadline submit report /by 2026-03-01</td>
    </tr>
    <tr>
       <td>Add event</td>
-      <td>event <description> /from <date> /to <date></td>
+      <td>event (description) /from (date) /to <date></td>
       <td>event project meeting /from 2026-03-01 /to 2026-03-02</td>
    </tr>
    <tr>
       <td>Mark task</td>
-      <td>mark <task number></td>
+      <td>mark (task number)</td>
       <td>mark 2</td>
    </tr>
    <tr>
       <td>Unmark task</td>
-      <td>unmark <task number></td>
+      <td>unmark (task number)</td>
       <td>unmark 2</td>
    </tr><tr>
       <td>Delete task</td>
-      <td>delete <task number></td>
+      <td>delete (task number)</td>
       <td>delete 3</td>
    </tr><tr>
       <td>Find tasks</td>
-      <td>find <keyword></td>
+      <td>find (keyword)</td>
       <td>find book</td>
    </tr><tr>
       <td>Tasks due</td>
-      <td>due <date></td>
+      <td>due (date)</td>
       <td>due 2026-03-02</td>
    </tr>
 </table>
