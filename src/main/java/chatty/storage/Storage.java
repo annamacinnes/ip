@@ -74,13 +74,16 @@ public class Storage {
         assert FILE_PATH != null && !FILE_PATH.isBlank() : "FILE_PATH should not be null or blank";
 
         File file = new File(FILE_PATH);
+
+        File parent = file.getParentFile();
+        if (parent != null && !parent.exists()) {
+            parent.mkdirs();
+        }
+
         if (!file.exists()) {
             file.createNewFile();
         }
-        File parent = file.getParentFile();
-        assert parent != null : "Parent directory should not be null";
-        parent.mkdirs();
-        assert file.exists() : "File should exist before loading";
+
         Scanner s = new Scanner(file);
         assert s != null : "Scanner should not be null";
         TaskList tasks = new TaskList();
