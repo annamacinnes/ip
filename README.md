@@ -6,7 +6,7 @@ You can add tasks, mark them as done, delete them, and search through them using
 Chatty supports three types of tasks:
 
 <ul>
-   <li>Todo – Simple tasks without date/time<li/>
+   <li>Todo – Simple tasks without date/time</li>
    <li>Deadline – Tasks with a due date</li>
    <li>Event – Tasks with a start and end date</li>
 </ul>
