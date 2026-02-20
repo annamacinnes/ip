@@ -27,11 +27,6 @@ public class Deadline extends Task{
     }
 
     @Override
-    public String getType() {
-        return "deadline";
-    }
-
-    @Override
     public boolean willOccurOn(LocalDate date) {
         return this.getDeadline().isEqual(date);
     }

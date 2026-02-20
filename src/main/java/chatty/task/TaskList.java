@@ -136,7 +136,7 @@ public class TaskList implements Iterable<Task> {
     }
 
     /**
-     * Marks tasks as complete or incomplete.
+     * Marks tasks as complete.
      *
      * @param taskIndexes the list of task indexes the user wishes to mark.
      * @return A formatted message containing the marked tasks.
@@ -155,6 +155,13 @@ public class TaskList implements Iterable<Task> {
         return markedTasks;
     }
 
+    /**
+     * Deletes tasks.
+     *
+     * @param taskIndexes the list of task indexes the user wishes to delete.
+     * @return A formatted message containing the deleted tasks.
+     * @throws ChattyExceptions If the input is invalid or improperly formatted.
+     */
     public TaskList deleteTask(List<Integer> taskIndexes) {
         TaskList deletedTasks = new TaskList();
 
@@ -165,11 +172,16 @@ public class TaskList implements Iterable<Task> {
             deletedTasks.add(task);
             this.remove(taskIndex);
         }
-
         return deletedTasks;
     }
 
-
+    /**
+     * Marks tasks as incomplete.
+     *
+     * @param taskIndexes the list of task indexes the user wishes to unmark.
+     * @return A formatted message containing the unmarked tasks.
+     * @throws ChattyExceptions If the input is invalid or improperly formatted.
+     */
     public TaskList unmarkTask(List<Integer> taskIndexes) {
         TaskList unmarkedTasks = new TaskList();
 
